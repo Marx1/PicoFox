@@ -25,21 +25,46 @@ transmit. Configuring a callsign is required to enable the transmitter.
 
 // #define DEBUG 1
 
-#define AMP_EN 2u                            // Pin which enables the amplifier. Set LOW to enable, HIGH to disable.
-#define AUDIO_SAMPLE_RATE_HZ 5000            // Audio sample rate (also rate of updates to SI5351).
-#define FM_DEVIATION_HZ 10000                // Maximum RF deviation in Hz.
-#define SI5351_PLL SI5351_PLLA               // PLL which will be used on the SI5351, consider this PLL unavailable for other purposes.
-#define SI5351_CLOCK_OUTPUT SI5351_CLK0      // Clock output which drives RF circuitry.
-#define SI5351_CLOCK_PARAM_START 42          // Register address on which multisynth parameters start.
-#define SI5351_CLOCK_DIV 6                   // Fixed divider between PLL clock and MS.
-#define SI5351_DRIVE_LEVEL SI5351_DRIVE_2MA  // Power output from SI5351, higher levels don't add much output but do create spurious emmissions.
-#define SAMPLE_WRITE_CORR_US -3              // Time correction between sample writes to account for code which can't be measured.
-#define MAX_UINT32 4294967295                // Maximum value for a 32 bit unsigned integer. Used to prevent glitches when micros() overflows.
+// Board revision ID pins.
+// Pulldown required. 0000 == r2, 1000 == r3.
+#define ID0 22u
+#define ID1 23u
+#define ID2 24u
+#define ID3 25u
+
+#define SDA 0u                                  // I2C data pin.
+#define SCL 1u                                  // I2C clock pin.
+#define I2C_CLOCK_HZ 1000000                    // >= 800kHz needed for sufficiently fast I2C writes.
+#define AMP_EN 2u                               // Pin which enables the amplifier. Set LOW to enable, HIGH to disable.
+#define ATTN_LE 4u                              // Pin which latches the attenuator.
+#define AUDIO_SAMPLE_RATE_HZ 5000               // Audio sample rate (also rate of updates to SI5351).
+#define FM_DEVIATION_HZ 10000                   // Maximum RF deviation in Hz.
+#define SI5351_PLL SI5351_PLLA                  // PLL which will be used on the SI5351, consider this PLL unavailable for other purposes.
+#define SI5351_CLOCK_OUTPUT SI5351_CLK0         // Clock output which drives RF circuitry.
+#define SI5351_PLL_HZ 900000000                 // PLL frequency in Hz.
+#define SI5351_MS_MAX_DENOM 1048575             // 2^20 - 1, max denominator for fractional MS divider.
+#define SI5351_MS_RATIONAL_CALC_ITERS 16        // Maximum iterations searching for MS parameters, keeps calculation within 200us.
+
+#define SI5351_CLOCK_PARAM_START 42             // Register address on which multisynth parameters start.
+#define SI5351_CLOCK_DIV 6                      // Fixed divider between PLL clock and MS.
+#define SI5351_DRIVE_LEVEL_R2 SI5351_DRIVE_2MA  // Power output from SI5351, higher levels don't add much output but do create spurious emmissions.
+#define SI5351_DRIVE_LEVEL_R3 SI5351_DRIVE_2MA  // Power output from SI5351.
+#define SAMPLE_WRITE_CORR_US -3                 // Time correction between sample writes to account for code which can't be measured.
+#define MAX_UINT32 4294967295                   // Maximum value for a 32 bit unsigned integer. Used to prevent glitches when micros() overflows.
+
+#define TEST_MODE_PIN 14u                       // Pin which is monitored to enter test mode. If you use this pin feel free to remove this logic.
 
 // Frequency limitations.
 #define MIN_FREQ_MHZ 144
 #define MAX_FREQ_MHZ_ITU1 146  // ITU zone 1.
 #define MAX_FREQ_MHZ 148       // ITU zones 2 and 3.
+
+// Test mode detected. Indicates program / test before shipping.
+bool test_mode;
+
+// Board revision.
+uint16_t revision;
+bool wireRunning = false;
 
 // RF Clock Gen
 Si5351 si5351;
@@ -64,15 +89,6 @@ const char AUDIO_WAV[] = "audio.wav";
 const char CALLSIGN_WAV[] = ".callsign.wav";
 const char SETTINGS_CRC[] = ".settings_crc.bin";
 
-// These files are allowed to be in flash, other files will be deleted.
-const char* validFiles[] = {
-  SETTINGS_TXT,
-  AUDIO_WAV,
-  CALLSIGN_WAV,
-  SETTINGS_CRC,
-};
-const size_t numValidFiles = sizeof(validFiles) / sizeof(validFiles[0]);
-
 // Default settings.
 const char DEFAULT_CALLSIGN[12] = "";
 const uint8_t DEFAULT_ITU_ZONE = 2;
@@ -82,6 +98,9 @@ const uint8_t DEFAULT_WPM = 15;
 const uint8_t DEFAULT_FARNSWORTH_WPM = 10;
 const uint16_t DEFAULT_MORSE_TONE_HZ = 600;
 const uint8_t DEFAULT_TONE_AMPLITUDE_PERCENT = 70;
+const uint8_t DEFAULT_ATTENUATION = 0;
+const uint8_t ATTENUATION_CYCLE_OFFSETS[] = {0, 40, 20};
+const int32_t CARRIER_OFFSET_SEQUENCE_HZ[] = {0, 1000, 3000, 5000, 3000, 1000, 0, -1000, -3000, -5000, -3000, -1000};
 
 // Config struct, start by loading defaults.
 struct Settings {
@@ -94,6 +113,7 @@ struct Settings {
   uint16_t morseToneHz;
   uint8_t toneAmplitudePercent;
   bool isConfigured;
+  uint8_t attenuation;
 };
 
 Settings settings = {
@@ -104,10 +124,19 @@ Settings settings = {
   .morseWPM = DEFAULT_WPM,
   .farnsworthWPM = DEFAULT_FARNSWORTH_WPM,
   .morseToneHz = DEFAULT_MORSE_TONE_HZ,
-  .isConfigured = (strlen(DEFAULT_CALLSIGN) > 0)
+  .isConfigured = (strlen(DEFAULT_CALLSIGN) > 0),
+  .attenuation = DEFAULT_ATTENUATION
 };
 
 int settingsCrc = 0;
+
+struct MsABC {
+  uint32_t A;
+  uint32_t B;
+  uint32_t C;
+  Si5351RegSet reg;
+  uint8_t int_mode;
+};
 
 // Creates a fat16 filesystem in the flash space.
 void formatFat16(void) {
@@ -146,32 +175,11 @@ void closeRoot() {
   root.close();
 }
 
-bool isFileInList(const char* name) {
-  for (size_t i = 0; i < numValidFiles; i++) {
-    if (strcmp(name, validFiles[i]) == 0) {
-      return true;
-    }
-  }
-  return false;
-}
-
 // Removes files which shouldn't be present and applies defaults for missing files.
 void flashCleanup() {
   // Open root filesystem.
   if (!openRoot()) {
     Serial.println("failed to open rootfs");
-  }
-
-  // List files and delete any that don't belong here.
-  while (file.openNext(&root, O_RDWR)) {
-    char name[64];
-    file.getName(name, sizeof(name));
-    if (!isFileInList(name)) {
-      file.remove();
-      Serial.print("Removing ");
-      Serial.println(name);
-    }
-    file.close();
   }
 
   // Write the default settings if settings file is missing.
@@ -196,11 +204,12 @@ void saveDefaultSettings() {
   snprintf(
     buffer,
     sizeof(buffer),
-    "CALLSIGN=%s\nITU_ZONE=%u\nFREQ_MHZ=%.6f\nDUTY_CYCLE=%u\nMORSE_WPM=%u\nMORSE_FARNSWORTH_WPM=%u\nMORSE_TONE=%u\nMORSE_TONE_VOL=%u\n",
+    "CALLSIGN=%s\nITU_ZONE=%u\nFREQ_MHZ=%.6f\nDUTY_CYCLE=%u\nATTENUATION=%u\nMORSE_WPM=%u\nMORSE_FARNSWORTH_WPM=%u\nMORSE_TONE=%u\nMORSE_TONE_VOL=%u\n",
     DEFAULT_CALLSIGN,
     DEFAULT_ITU_ZONE,
     DEFAULT_FREQ_MHZ,
     DEFAULT_DUTY_CYCLE,
+    DEFAULT_ATTENUATION,
     DEFAULT_WPM,
     DEFAULT_FARNSWORTH_WPM,
     DEFAULT_MORSE_TONE_HZ,
@@ -245,6 +254,7 @@ void loadSettings() {
       else if (key == "ITU_ZONE") settings.ituZone = val.toInt();
       else if (key == "FREQ_MHZ") settings.transmitFreqMHz = val.toDouble();
       else if (key == "DUTY_CYCLE") settings.dutyCyclePercent = val.toInt();
+      else if (key == "ATTENUATION") settings.attenuation = val.toInt();
       else if (key == "MORSE_WPM") settings.morseWPM = val.toInt();
       else if (key == "MORSE_FARNSWORTH_WPM") settings.farnsworthWPM = val.toInt();
       else if (key == "MORSE_TONE") settings.morseToneHz = val.toInt();
@@ -260,6 +270,11 @@ void loadSettings() {
   // Validate config and apply defaults when config is weird.
   if (settings.dutyCyclePercent > 100) {
     settings.dutyCyclePercent = DEFAULT_DUTY_CYCLE;
+  }
+  if (settings.attenuation < 0) {
+    settings.attenuation = 0;
+  } else if (settings.attenuation > 127) {
+    settings.attenuation = 127;
   }
   if (settings.morseWPM == 0 || settings.morseWPM > 30) {
     settings.morseWPM = DEFAULT_WPM;
@@ -314,6 +329,13 @@ void generateMorseAudio() {
   openRoot();
   if (!file.open(&root, CALLSIGN_WAV, O_RDWR | O_CREAT)) {
     Serial.println("Failed to open .callsign.wav");
+    return;
+  }
+
+  // Remove the existing data, if any.
+  file.remove();
+  if (!file.open(&root, CALLSIGN_WAV, O_RDWR | O_CREAT)) {
+    Serial.println("Failed to re-open .callsign.wav after nuking the old one.");
     return;
   }
 
@@ -411,6 +433,89 @@ void loadFlashData() {
   generateMorseIfNeeded();
 }
 
+// Starts the shared I2C bus if it is not already running.
+void startWire() {
+  if (wireRunning) return;
+
+  Wire.begin();
+  Wire.setClock(I2C_CLOCK_HZ);
+  wireRunning = true;
+}
+
+// Stops the shared I2C bus so the attenuator can reclaim the pins.
+void stopWire() {
+  if (!wireRunning) return;
+
+  Wire.end();
+  wireRunning = false;
+}
+
+// Programs the BVA1761 attenuator. This temporarily reclaims the shared SDA/SCL pins.
+void programAttenuator(uint8_t attenuation) {
+  if (revision != 3) return;
+
+  if (attenuation > 127) {
+    attenuation = 127;
+  }
+
+  stopWire();
+
+  pinMode(ATTN_LE, OUTPUT);
+  digitalWrite(ATTN_LE, LOW);
+
+  // Hold SCL low before touching SDA so the shared bus does not see an I2C START.
+  pinMode(SCL, OUTPUT);
+  digitalWrite(SCL, LOW);
+  pinMode(SDA, OUTPUT);
+  digitalWrite(SDA, LOW);
+
+  // Attenuation level is first byte LSB first.
+  // All address bits zero, written after attn byte.
+  uint8_t mask = 1;
+  for (int i = 0; i < 16; i++) {
+    if (i < 8) {
+      if ((attenuation & mask) > 0) {
+        pinMode(SDA, INPUT);
+      } else {
+        pinMode(SDA, OUTPUT);
+        digitalWrite(SDA, LOW);
+      }
+      mask = mask << 1;
+    } else {
+      pinMode(SDA, OUTPUT);
+      digitalWrite(SDA, LOW);
+    }
+
+    // Pulse clock to write the current bit.
+    pinMode(SCL, INPUT);
+    delayMicroseconds(1);
+    pinMode(SCL, OUTPUT);
+    digitalWrite(SCL, LOW);
+    delayMicroseconds(1);
+  }
+
+  // Pulse the LE pin to apply the specified attenuation level.
+  digitalWrite(ATTN_LE, HIGH);
+  delayMicroseconds(1);
+  digitalWrite(ATTN_LE, LOW);
+
+  startWire();
+}
+
+// Returns the next attenuation in the repeating base, base+40, base+20 sequence.
+uint8_t getAttenuationCycleValue(uint8_t baseAttenuation, uint8_t cycleStep) {
+  uint16_t attenuation = baseAttenuation + ATTENUATION_CYCLE_OFFSETS[cycleStep % 3];
+  if (attenuation > 127) {
+    attenuation = 127;
+  }
+  return attenuation;
+}
+
+// Returns the next carrier offset in the repeating stepped-offset playback sequence.
+int32_t getCarrierOffsetHz(uint8_t sequenceStep) {
+  return CARRIER_OFFSET_SEQUENCE_HZ[sequenceStep % (sizeof(CARRIER_OFFSET_SEQUENCE_HZ) / sizeof(CARRIER_OFFSET_SEQUENCE_HZ[0]))];
+}
+
 // Enables and disables the si5351 clock output and the RF amplifier.
 void setSi5351Output(bool enabled) {
   if (enabled && settings.dutyCyclePercent > 0) {
@@ -447,7 +552,7 @@ void delayForNextSample(uint32_t start) {
 }
 
 // Generates narrowband frequency modulated RF from a given audio file.
-uint32_t playAudio(const char* filename) {
+uint32_t playAudio(const char* filename, int32_t carrierOffsetHz) {
   if (hostMounted) return 0;  // Refuse to play audio if the host is trying to use the filesystem.
   openRoot();
   if (!file.open(&root, filename, O_RDWR | O_CREAT)) {
@@ -475,7 +580,7 @@ uint32_t playAudio(const char* filename) {
     uint32_t start = micros();
 
     // Frequency deviation mapping
-    double deviation = ((double)sample * FM_DEVIATION_HZ) / 32767;
+    double deviation = carrierOffsetHz + (((double)sample * FM_DEVIATION_HZ) / 32767);
     setFrequencyOffset(deviation);
 
     // Wait until next sample time
@@ -501,6 +606,9 @@ uint32_t playAudio(const char* filename) {
 
 // Plays the given audio file and generated morse code id repeatedly.
 void audioTask() {
+  uint8_t attenuationCycleStep = 1;  // setup() already programs the base attenuation, so stage the next level first.
+  uint8_t carrierSequenceStep = 0;
+
   while (true) {
     if (hostMounted) {  // Cancel task if the host is trying to use the filesystem.
       setSi5351Output(false);
@@ -508,12 +616,22 @@ void audioTask() {
     }
 
     if (settings.isConfigured && settings.dutyCyclePercent > 0) {
+      int32_t carrierOffsetHz = getCarrierOffsetHz(carrierSequenceStep);
+      carrierSequenceStep = (carrierSequenceStep + 1) % (sizeof(CARRIER_OFFSET_SEQUENCE_HZ) / sizeof(CARRIER_OFFSET_SEQUENCE_HZ[0]));
+      setFrequencyOffset(carrierOffsetHz);
       setSi5351Output(true);
-      uint32_t audioLengthMs = playAudio(AUDIO_WAV);
-      audioLengthMs += playAudio(CALLSIGN_WAV);
+      uint32_t audioLengthMs = playAudio(AUDIO_WAV, carrierOffsetHz);
+      if (!test_mode) { // No generated morse in test mode.
+        carrierOffsetHz = getCarrierOffsetHz(carrierSequenceStep);
+        carrierSequenceStep = (carrierSequenceStep + 1) % (sizeof(CARRIER_OFFSET_SEQUENCE_HZ) / sizeof(CARRIER_OFFSET_SEQUENCE_HZ[0]));
+        setFrequencyOffset(carrierOffsetHz);
+        audioLengthMs += playAudio(CALLSIGN_WAV, carrierOffsetHz);
+      }
       if (settings.dutyCyclePercent < 100) {
         uint32_t offTime = ((100 - settings.dutyCyclePercent) * audioLengthMs) / 100;
         setSi5351Output(false);
+        programAttenuator(getAttenuationCycleValue(settings.attenuation, attenuationCycleStep));
+        attenuationCycleStep = (attenuationCycleStep + 1) % 3;
         delay(offTime);
       }
     } else {
@@ -523,17 +641,15 @@ void audioTask() {
 }
 
 void setup() {
-  Serial.begin(115200);
-
-#ifdef DEBUG
-  while (!Serial) delay(10);
-#endif
-
   // Initialize flash device.
   while (!flash.begin()) {
     Serial.println("Flash setup failed.");
     delay(1000);
   }
+
+  Serial.println("Formatting flash...");
+  formatFat16();
+  Serial.println("Format complete.");
 
   // Init file system on the flash
   if (!fatfs.begin(&flash, true, 1, 0)) {
@@ -556,22 +672,65 @@ void setup() {
     TinyUSBDevice.attach();
   }
 
+  // Setup serial, after USB setup or logs in setup will get eaten.
+  Serial.begin(115200);
+#ifdef DEBUG
+  while (!Serial) delay(10);
+  Serial.println("Serial setup complete.");
+#endif
+
+  // Check for test mode.
+  pinMode(TEST_MODE_PIN, INPUT_PULLDOWN);
+  test_mode = digitalRead(TEST_MODE_PIN);
+
+  // Initialize board ID pins and ID the board revisions.
+  pinMode(ID0, INPUT_PULLDOWN);
+  pinMode(ID1, INPUT_PULLDOWN);
+  pinMode(ID2, INPUT_PULLDOWN);
+  pinMode(ID3, INPUT_PULLDOWN);
+  bool id0 = digitalRead(ID0);
+  bool id1 = digitalRead(ID1);
+  bool id2 = digitalRead(ID2);
+  bool id3 = digitalRead(ID3);
+  if (!id0 && !id1 && !id2 && !id3) {
+    revision = 2;
+  } else if (id0 && !id1 && !id2 && !id3) {
+    revision = 3;
+  } else {
+    revision = 0;  // This should never happen, lol.
+  }
+  Serial.print("Revision: ");
+  Serial.println(revision);
+
   // Initialize pins for LED and Amp control.
   pinMode(AMP_EN, OUTPUT);
   digitalWrite(AMP_EN, HIGH);
   pinMode(LED_BUILTIN, OUTPUT);
   digitalWrite(LED_BUILTIN, LOW);
 
-  // Initialize the si5351.
-  Wire.setClock(1000000);  // >= 800kHz needed for sufficiently fast I2C writes.
-  si5351.init(SI5351_CRYSTAL_LOAD_10PF, 0, 0);  // Set load expected by external TCXO.
-  si5351.drive_strength(SI5351_CLOCK_OUTPUT, SI5351_DRIVE_LEVEL);  // Set drive strength.
-  si5351.set_int(SI5351_CLOCK_OUTPUT, 1);  // Clock will be set to a fixed int mult, fine adjustment done on the PLL mult.
-  si5351.set_pll((settings.transmitFreqMHz * 1e8) * SI5351_CLOCK_DIV, SI5351_PLL);  // Set the PLL frequency based on the target frequency.
-  si5351.set_freq_manual(settings.transmitFreqMHz * 1e8, si5351.plla_freq, SI5351_CLOCK_OUTPUT);  // Let the library calculate and set the simple div by 6 MS.
-  si5351.pll_reset(SI5351_PLL);  // Soft reset to get the PLL moving.
-  Serial.println("si5351 setup complete.");
+  // Initialize the BVA1761 if present.
+  if (revision == 3) {
+    programAttenuator(settings.attenuation);
+  }
 
+  // Initialize the si5351.
+  startWire();
+  si5351.init(SI5351_CRYSTAL_LOAD_10PF, 0, 0);  // Set load expected by external TCXO.
+  // Set drive strength.
+  if (revision == 3) {
+    si5351.drive_strength(SI5351_CLOCK_OUTPUT, SI5351_DRIVE_LEVEL_R3);
+  } else {
+    si5351.drive_strength(SI5351_CLOCK_OUTPUT, SI5351_DRIVE_LEVEL_R2);
+  }
+  if (settings.isConfigured || test_mode) {
+    si5351.set_int(SI5351_CLOCK_OUTPUT, 1);  // Clock will be set to a fixed int mult, fine adjustment done on the PLL mult.
+    si5351.set_pll((settings.transmitFreqMHz * 1e8) * SI5351_CLOCK_DIV, SI5351_PLL);  // Set the PLL frequency based on the target frequency.
+    si5351.set_freq_manual(settings.transmitFreqMHz * 1e8, si5351.plla_freq, SI5351_CLOCK_OUTPUT);  // Let the library calculate and set the simple div by 6 MS.
+    si5351.pll_reset(SI5351_PLL);  // Soft reset to get the PLL moving.
+    setSi5351Output(true);
+    Serial.println("si5351 setup complete.");
+  }
+  
   // Start the audio playback task on the second core to prevent timing issues.
   multicore_launch_core1(audioTask);
 }
