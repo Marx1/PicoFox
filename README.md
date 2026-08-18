@@ -3,13 +3,18 @@
 
 *This version is modified from the origional by AI6YM. It's designed to be a badge (Defcon/Ham Radio Village Style), doesn't have the expansion header, and runs sightly diffrent firmware.*
 
+----------
 **Partially AI CODED**
-The modifications to this code was mainly done with AI. I want to be clear about this. 
-I'm not a full-time coder, I do understand code, and don't have time to learn this platform for this one-off project.
-I *HATE* when people pass off code as thiers when it's been AI/Vibe coded, so I wanted to be super clear here.
-I did verify everything and validate the RF purity on my IFR 1900. It is a bit heavy on the deviation, so if you need it to be  more narrow, adjust AUDIO_FM_DEVIATION_HZ and SSTV_FM_DEVIATION_HZ as needed.
-- Trevor KG6MDW
 
+The modifications to this code was mainly done with AI. I want to be clear about this. 
+
+I'm not a full-time coder, I do understand code, and don't have time to learn this platform for this one-off project.
+
+I *HATE* when people pass off code as thiers when it's been AI/Vibe coded, so I wanted to be super clear here.
+
+I did verify everything and validate the RF purity on my IFR 1900. It is a bit heavy on the deviation, so if you need it to be  more narrow, adjust AUDIO_FM_DEVIATION_HZ and SSTV_FM_DEVIATION_HZ as needed. -- Trevor KG6MDW
+
+----------
 
 **PicoFox** is an open source fox transmitter for the 2-meter amateur band, built around the
 RP2040 microcontroller (the same chip used in the Raspberry Pi Pico). It’s designed to be simple,
