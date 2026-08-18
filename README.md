@@ -1,13 +1,24 @@
 # PicoFox – A Hackable 2m Fox Transmitter
+**Pacificon Edition**
+
+*This version is modified from the origional by AI6YM. It's designed to be a badge (Defcon/Ham Radio Village Style), doesn't have the expansion header, and runs sightly diffrent firmware.*
+
+**Partially AI CODED**
+The modifications to this code was mainly done with AI. I want to be clear about this. 
+I'm not a full-time coder, I do understand code, and don't have time to learn this platform for this one-off project.
+I *HATE* when people pass off code as thiers when it's been AI/Vibe coded, so I wanted to be super clear here.
+I did verify everything and validate the RF purity on my IFR 1900. It is a bit heavy on the deviation, so if you need it to be  more narrow, adjust AUDIO_FM_DEVIATION_HZ and SSTV_FM_DEVIATION_HZ as needed.
+- Trevor KG6MDW
+
 
 **PicoFox** is an open source fox transmitter for the 2-meter amateur band, built around the
 RP2040 microcontroller (the same chip used in the Raspberry Pi Pico). It’s designed to be simple,
 functional, and easy to modify.
 
 PicoFox works well as a standalone fox for portable or walking hunts, but it’s also a great platform
-for experimentation. There's ample CPU, flash, and GPIO available if you want to add features like
-sensors or interactivity. The transmitter can generate a frequency or phase modulated signal with up
-to 2.5kHz (data) bandwidth.
+for experimentation. There's ample CPU, flash,~~and GPIO~~ available if you want to add features ~~like
+sensors or interactivity~~. The transmitter can generate a frequency or phase modulated signal with up
+to 3kHz (data) bandwidth.
 
 
 ## Key Features
@@ -17,19 +28,23 @@ to 2.5kHz (data) bandwidth.
 - Automatic Morse code ID with configurable tone, speed, and spacing.
 - RF output > 18dBm at full power. Down to ~ -20dBm with full attenuation.
 - Charges over USB.
-- Expansion header provides:
-  - 12 GPIOs (including I2C, SPI, UART, ADC).
-  - Regulated 3.3V and raw battery voltage.
-  - Two additional SI5351 clock outputs
+
+## Extra Features in the Pacificon Firmware
+- Built in SSTV and APRS tranmissions (directly from JPEG or Text file)
+- Automatic cycling through WAV/JPEG/APRS Message files on each loop
+- Dynamic tx power (Randomly set withing a specific range) for each transmission
+
+## REMOVED Features in This version:
+- Expansion header
 
 
 ### Getting One
 
-Fully assembled PicoFox units are available from [AI6YM.radio](https://ai6ym.radio/picofox). An
-enclosure, battery, and antenna are included. I ship nearly anywhere in the world.
+~~Fully assembled PicoFox units are available from [AI6YM.radio](https://ai6ym.radio/picofox). An
+enclosure, battery, and antenna are included. I ship nearly anywhere in the world.~~
 
 You can also build your own - both the hardware and software are open source for non-commercial use.
-For commercial inquiries, contact [justin@ai6ym.radio](mailto:justin@ai6ym.radio).
+For commercial inquiries, I am not providing commercial production of the hardware. However for the oritional design contact [justin@ai6ym.radio](mailto:justin@ai6ym.radio), then load the firmware from this repository.
 
 
 ## Configuration
@@ -45,15 +60,20 @@ cycle the PicoFox. A default settings file will be regenerated.
 
 ### Settings Overview
 
+__THIS SECTION IS STILL UNDER DEVELOPMENT AS THE NEW SOFTWARE IS BEING WRITTEN STILL__
+
 - `CALLSIGN`: Alphanumeric callsign (max 12 characters).
 - `ITU_ZONE`: ITU zone where the transmitter operates (`1`, `2`, or `3`).
 - `FREQ_MHZ`: Transmit frequency in MHz.
 - `ATTENUATION`: Attenuation level `0` - `127`, approximately 0.25dB steps.
-- `DUTY_CYCLE`: Transmit duty cycle percentage (`0–100`).
+- `DUTY_CYCLE`: Transmit duty cycle percentage (`0–100`).  If SSTV mode is on, this must be < 80
 - `MORSE_WPM`: Morse ID speed in words per minute.
 - `MORSE_FARNSWORTH_WPM`: Slower Farnsworth spacing speed (ignored if lower than `MORSE_WPM`).
 - `MORSE_TONE`: Morse tone frequency (100–2000 Hz).
 - `MORSE_TONE_VOL`: Morse tone volume percentage (`1–100`).
+- `VOICE_ENABLE`: Enables the Voice/Audio file and Morse code mode.
+- `SSTV_ENABLE`: Enables SSTV Mode - YOU MUST set a duty cycle < 80 for this mode to work. It does the image proccessing when TX is off.
+- `SSTV_MODE`: SSTV encoding mode, curently ONLY ROBOT36 is supported.
 
 **Note:** Invalid or missing values may disable the transmitter or revert to safe defaults.
 
@@ -70,6 +90,11 @@ battery charges over USB but no indication is available to show battery charging
 power with the switch OFF but the battery will NOT be charged.**
 
 A full battery will last about five hours at 100% duty cycle, 
+
+Transmit cycle is:
+  - SSTV (If enabled)
+  - APRS (If Enabled)
+  - Audio/Morse
 
 
 ## Replacing the Audio File
@@ -91,11 +116,37 @@ Using **Audacity** (free software available for all major OSs):
 
 - Improper format may prevent audio transmission or cause noise to be transmitted instead.
 - The audio is transmitted, followed by the morse ID, and then the transmitter turns off if
-  `DUTY_CYCLE < 100`. In this way the length of the audio determines the transmit cycle time and the
-  frequency of morse code ID transmissions. **YOU ARE RESPONSIBLE FOR COMPLYING WITH LOCAL LAWS FOR
-  TRANSMITTING YOUR CALLSIGN!**
-- To restore the default audio, delete `audio.wav`, eject the drive, disconnect USB, and power cycle
+  `DUTY_CYCLE < 100`. The transmitter DOES take into account SSTV transmit times, as well as APRS. 
+- To restore the default audio, delete all  `audio.wav`, eject the drive, disconnect USB, and power cycle
   the PicoFox.
+- To use muliple audio files, append a 1 to the file name. IE `audio1.wav`, `audio2.wav` etc.
+
+## SSTV Mode
+__THIS SECTION IS STILL UNDER DEVELOPMENT AS THE NEW SOFTWARE IS BEING WRITTEN STILL__
+
+To use SSTV mode, Upload 320x240 JPEG images named `sstv.jpg` to the flash, and enable SSTV_MODE in the config file.
+
+Make sure you have a valid callsign hard baked into your images. They should be 100% ready to transmit. the Picofox will NOT send a morse ID after SSTV.
+
+
+**Notes:**
+- To use muliple SSTV files, add sditional files with sqequencial numbers to the file name. IE `sstv.jpg`, `sstv1.jpg`, `sstv2.jpg` etc.
+- The image MUST be 320x240 otherwise it will skip it.
+- Due to timings etc, you may need to use auto-slant or high-precision slant correction. Some android apps (IE Robot36) seem to be OK
+- DO NOT use a 100% duty cycle. there needs to be a break inbetween for the Pico to load the image. 99% should be fine if you want basically constant tx. In reality a lower duty cycle like 20-40% is better for harder hunts.
+
+## APRS Mode
+__THIS SECTION IS STILL UNDER DEVELOPMENT AS THE NEW SOFTWARE IS BEING WRITTEN STILL__
+
+To use APRS mode, Upload a text file  named `aprs.txt` to the flash, and enable APRS_MODE in the config file, and set the ARPS_TOCALL, and the APRS_FROMCALL
+
+The APRS messages are sent as a MIC-E message sent to the callsign configured in the config file, sent to/from the callsigns set in the config via the APRS_TOCALL and ARPS_FROMCALL. 
+
+__DO NOT USE THIS ON 144.39mhz Use a simplex/fox frequency.__
+
+**Notes:**
+- To use muliple ARPS messages, append a 1 to the file name. IE `aprs1.txt`, `aprs2.txt` etc.
+
 
 
 ## Design Brief

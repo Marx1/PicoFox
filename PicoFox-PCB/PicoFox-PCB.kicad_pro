@@ -3,6 +3,8 @@
     "3dviewports": [],
     "design_settings": {
       "defaults": {
+        "apply_defaults_to_fp_barcodes": false,
+        "apply_defaults_to_fp_dimensions": false,
         "apply_defaults_to_fp_fields": false,
         "apply_defaults_to_fp_shapes": false,
         "apply_defaults_to_fp_text": false,
@@ -48,7 +50,23 @@
         "silk_text_thickness": 0.15,
         "silk_text_upright": false,
         "zones": {
-          "min_clearance": 0.15
+          "border_display_style": 2,
+          "border_hatch_pitch": 0.5,
+          "corner_radius": 0.0,
+          "corner_smoothing": 0,
+          "fill_mode": 0,
+          "hatch_gap": 1.5,
+          "hatch_orientation": 0.0,
+          "hatch_smoothing_level": 0,
+          "hatch_smoothing_value": 0.1,
+          "hatch_thickness": 1.0,
+          "min_clearance": 0.15,
+          "min_island_area": 10.0,
+          "min_thickness": 0.25,
+          "pad_connection": 1,
+          "remove_islands": 0,
+          "thermal_relief_gap": 0.5,
+          "thermal_relief_spoke_width": 0.5
         }
       },
       "diff_pair_dimensions": [
@@ -58,88 +76,7 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [
-        [
-          "courtyards_overlap|55405000|58105000|5499f441-b77b-4d06-90c1-19bff7a6f0f6|7ca96c49-97d6-4f85-90d1-14a946e7100d",
-          ""
-        ],
-        [
-          "courtyards_overlap|58555000|58105000|49677343-abb6-4736-8096-be23c3f2689c|7ca96c49-97d6-4f85-90d1-14a946e7100d",
-          ""
-        ],
-        [
-          "courtyards_overlap|66005000|58105000|04db96d3-4f84-4891-a55a-403b6a94b69a|81ba8c1d-9642-4a61-b60b-8750f5eb9dad",
-          ""
-        ],
-        [
-          "courtyards_overlap|67805000|57865000|24d8d9c9-2b7e-4527-b2ca-81983a4fc776|81ba8c1d-9642-4a61-b60b-8750f5eb9dad",
-          ""
-        ],
-        [
-          "courtyards_overlap|67805000|58105000|04db96d3-4f84-4891-a55a-403b6a94b69a|24d8d9c9-2b7e-4527-b2ca-81983a4fc776",
-          ""
-        ],
-        [
-          "courtyards_overlap|70955000|58105000|1aad8baa-fa03-40ec-bdb6-0bdb5b95f2c0|24d8d9c9-2b7e-4527-b2ca-81983a4fc776",
-          ""
-        ],
-        [
-          "courtyards_overlap|70955000|58105000|1aad8baa-fa03-40ec-bdb6-0bdb5b95f2c0|81ba8c1d-9642-4a61-b60b-8750f5eb9dad",
-          ""
-        ],
-        [
-          "hole_clearance|66950000|106515000|6a389e1a-1e13-463c-8008-260ee2c6d828|0958cfe3-f2d9-4ffc-8d08-1d30669accf2",
-          ""
-        ],
-        [
-          "hole_clearance|66950000|106515000|dfc4d432-7272-4d41-8fc6-43c73f8ec0ad|0958cfe3-f2d9-4ffc-8d08-1d30669accf2",
-          ""
-        ],
-        [
-          "hole_clearance|73050000|106515000|83a1ed10-bfa7-4528-9a6f-9c20d6783b43|4002f0db-0ce9-4591-8f43-838782fb225a",
-          ""
-        ],
-        [
-          "hole_clearance|73050000|106515000|8a3523bc-7902-48ba-8578-b60230ab25d0|4002f0db-0ce9-4591-8f43-838782fb225a",
-          ""
-        ],
-        [
-          "lib_footprint_issues|63614500|84925000|59bb8e57-d514-458b-9456-4c2bed3b70fe|00000000-0000-0000-0000-000000000000",
-          ""
-        ],
-        [
-          "lib_footprint_issues|79060000|57390000|1b9f6d83-2140-4f20-9be5-6cb47665880c|00000000-0000-0000-0000-000000000000",
-          ""
-        ],
-        [
-          "lib_footprint_mismatch|61137500|100762500|32381467-3211-479b-a5f1-82acb9881f1f|00000000-0000-0000-0000-000000000000",
-          ""
-        ],
-        [
-          "lib_footprint_mismatch|88800000|89000000|423924ba-b97a-44bc-ac23-9d57f79b98f8|00000000-0000-0000-0000-000000000000",
-          ""
-        ],
-        [
-          "lib_footprint_mismatch|88800000|99200000|04846810-4c4d-4058-bbc8-767c005bac8d|00000000-0000-0000-0000-000000000000",
-          ""
-        ],
-        [
-          "silk_edge_clearance|90000000|88353011|ad647882-15e3-42ac-9df7-dddfad370f3d|b1b70ea2-37ce-4191-bda1-2297d947bbf5",
-          ""
-        ],
-        [
-          "silk_edge_clearance|90000000|93453011|ad647882-15e3-42ac-9df7-dddfad370f3d|45713ec9-877d-46db-a78d-358237d41710",
-          ""
-        ],
-        [
-          "silk_edge_clearance|90000000|98553011|ad647882-15e3-42ac-9df7-dddfad370f3d|92720469-3df7-4da4-a719-d27e569112b1",
-          ""
-        ],
-        [
-          "via_dangling|64250000|82000000|d893418e-761f-4942-ab26-e73be88dc19c|00000000-0000-0000-0000-000000000000",
-          ""
-        ]
-      ],
+      "drc_exclusions": [],
       "meta": {
         "filename": "board_design_settings.json",
         "version": 2
@@ -159,9 +96,10 @@
         "extra_footprint": "warning",
         "footprint": "error",
         "footprint_filters_mismatch": "ignore",
+        "footprint_symbol_field_mismatch": "warning",
         "footprint_symbol_mismatch": "warning",
         "footprint_type_mismatch": "ignore",
-        "hole_clearance": "error",
+        "hole_clearance": "warning",
         "hole_near_hole": "error",
         "hole_to_hole": "error",
         "holes_co_located": "warning",
@@ -170,13 +108,14 @@
         "item_on_disabled_layer": "error",
         "items_not_allowed": "error",
         "length_out_of_range": "error",
-        "lib_footprint_issues": "warning",
-        "lib_footprint_mismatch": "warning",
+        "lib_footprint_issues": "ignore",
+        "lib_footprint_mismatch": "ignore",
         "malformed_courtyard": "error",
         "microvia_drill_out_of_range": "error",
         "mirrored_text_on_front_layer": "warning",
         "missing_courtyard": "ignore",
         "missing_footprint": "warning",
+        "missing_tuning_profile": "warning",
         "net_conflict": "warning",
         "nonmirrored_text_on_back_layer": "warning",
         "npth_inside_courtyard": "ignore",
@@ -196,9 +135,12 @@
         "too_many_vias": "error",
         "track_angle": "error",
         "track_dangling": "warning",
+        "track_not_centered_on_via": "ignore",
+        "track_on_post_machined_layer": "error",
         "track_segment_length": "error",
         "track_width": "error",
         "tracks_crossing": "error",
+        "tuning_profile_track_geometries": "ignore",
         "unconnected_items": "error",
         "unresolved_variable": "error",
         "via_dangling": "warning",
@@ -276,6 +218,7 @@
         0.2,
         0.3,
         0.4,
+        0.55,
         0.6,
         0.8,
         1.0

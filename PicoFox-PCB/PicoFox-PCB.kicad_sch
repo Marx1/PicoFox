@@ -5,216 +5,15 @@
 	(uuid "8c0b3d8b-46d3-4173-ab1e-a61765f77d61")
 	(paper "A2")
 	(title_block
-		(title "PicoFox - RP2040 Minimal")
-		(date "2025-06-09")
+		(title "PicoFox - RP2040 Pacificon Edition")
+		(date "2026-08-13")
 		(rev "REV2")
 		(company "AI6YM.radio")
+		(comment 1 "PCB Design by Trevor KG6MDW")
+		(comment 2 "Layout concept by Brian KA6ZED")
+		(comment 3 "Art by Thadya K6LDY")
 	)
 	(lib_symbols
-		(symbol "Connector:Conn_01x03_Pin"
-			(pin_names
-				(offset 1.016)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "J"
-				(at 0 5.08 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "Conn_01x03_Pin"
-				(at 0 -5.08 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Generic connector, single row, 01x03, script generated"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_locked" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "connector"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "Connector*:*_1x??_*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "Conn_01x03_Pin_1_1"
-				(rectangle
-					(start 0.8636 2.667)
-					(end 0 2.413)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(rectangle
-					(start 0.8636 0.127)
-					(end 0 -0.127)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(rectangle
-					(start 0.8636 -2.413)
-					(end 0 -2.667)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 2.54) (xy 0.8636 2.54)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 0) (xy 0.8636 0)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 -2.54) (xy 0.8636 -2.54)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin passive line
-					(at 5.08 2.54 180)
-					(length 3.81)
-					(name "Pin_1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 5.08 0 180)
-					(length 3.81)
-					(name "Pin_2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 5.08 -2.54 180)
-					(length 3.81)
-					(name "Pin_3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "Connector:Conn_Coaxial"
 			(pin_names
 				(offset 1.016)
@@ -375,113 +174,6 @@
 						)
 					)
 					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "Connector:TestPoint"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0.762)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "TP"
-				(at 0 6.858 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "TestPoint"
-				(at 0 5.08 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 5.08 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 5.08 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "test point"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "test point tp"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "Pin* Test*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "TestPoint_0_1"
-				(circle
-					(center 0 3.302)
-					(radius 0.762)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "TestPoint_1_1"
-				(pin passive line
-					(at 0 0 90)
-					(length 2.54)
-					(name "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1179,670 +871,6 @@
 						)
 					)
 					(number "B8"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
-		(symbol "Connector_Generic:Conn_02x10_Odd_Even"
-			(pin_names
-				(offset 1.016)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "J"
-				(at 1.27 12.7 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "Conn_02x10_Odd_Even"
-				(at 1.27 -15.24 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Generic connector, double row, 02x10, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "connector"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "Connector*:*_2x??_*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "Conn_02x10_Odd_Even_1_1"
-				(rectangle
-					(start -1.27 11.43)
-					(end 3.81 -13.97)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill
-						(type background)
-					)
-				)
-				(rectangle
-					(start -1.27 10.287)
-					(end 0 10.033)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 7.747)
-					(end 0 7.493)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 5.207)
-					(end 0 4.953)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 2.667)
-					(end 0 2.413)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 0.127)
-					(end 0 -0.127)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -2.413)
-					(end 0 -2.667)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -4.953)
-					(end 0 -5.207)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -7.493)
-					(end 0 -7.747)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -10.033)
-					(end 0 -10.287)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -12.573)
-					(end 0 -12.827)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 10.287)
-					(end 2.54 10.033)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 7.747)
-					(end 2.54 7.493)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 5.207)
-					(end 2.54 4.953)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 2.667)
-					(end 2.54 2.413)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 0.127)
-					(end 2.54 -0.127)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 -2.413)
-					(end 2.54 -2.667)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 -4.953)
-					(end 2.54 -5.207)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 -7.493)
-					(end 2.54 -7.747)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 -10.033)
-					(end 2.54 -10.287)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start 3.81 -12.573)
-					(end 2.54 -12.827)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin passive line
-					(at -5.08 10.16 0)
-					(length 3.81)
-					(name "Pin_1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 7.62 0)
-					(length 3.81)
-					(name "Pin_3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 5.08 0)
-					(length 3.81)
-					(name "Pin_5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "5"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 2.54 0)
-					(length 3.81)
-					(name "Pin_7"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "7"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 0 0)
-					(length 3.81)
-					(name "Pin_9"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "9"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -2.54 0)
-					(length 3.81)
-					(name "Pin_11"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "11"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -5.08 0)
-					(length 3.81)
-					(name "Pin_13"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "13"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -7.62 0)
-					(length 3.81)
-					(name "Pin_15"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "15"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -10.16 0)
-					(length 3.81)
-					(name "Pin_17"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "17"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at -5.08 -12.7 0)
-					(length 3.81)
-					(name "Pin_19"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "19"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 10.16 180)
-					(length 3.81)
-					(name "Pin_2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 7.62 180)
-					(length 3.81)
-					(name "Pin_4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "4"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 5.08 180)
-					(length 3.81)
-					(name "Pin_6"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "6"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 2.54 180)
-					(length 3.81)
-					(name "Pin_8"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "8"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 0 180)
-					(length 3.81)
-					(name "Pin_10"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "10"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -2.54 180)
-					(length 3.81)
-					(name "Pin_12"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "12"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -5.08 180)
-					(length 3.81)
-					(name "Pin_14"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "14"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -7.62 180)
-					(length 3.81)
-					(name "Pin_16"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "16"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -10.16 180)
-					(length 3.81)
-					(name "Pin_18"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "18"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 7.62 -12.7 180)
-					(length 3.81)
-					(name "Pin_20"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "20"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -3675,192 +2703,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Jumper:SolderJumper_2_Open"
-			(pin_numbers
-				(hide yes)
-			)
-			(pin_names
-				(offset 0)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom no)
-			(on_board yes)
-			(property "Reference" "JP"
-				(at 0 2.032 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "SolderJumper_2_Open"
-				(at 0 -2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Solder Jumper, 2-pole, open"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "solder jumper SPST"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "SolderJumper*Open*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "SolderJumper_2_Open_0_1"
-				(polyline
-					(pts
-						(xy -0.254 1.016) (xy -0.254 -1.016)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -0.254 -1.016)
-					(mid -1.2656 0)
-					(end -0.254 1.016)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start -0.254 -1.016)
-					(mid -1.2656 0)
-					(end -0.254 1.016)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(arc
-					(start 0.254 1.016)
-					(mid 1.2656 0)
-					(end 0.254 -1.016)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(arc
-					(start 0.254 1.016)
-					(mid 1.2656 0)
-					(end 0.254 -1.016)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 0.254 1.016) (xy 0.254 -1.016)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-			)
-			(symbol "SolderJumper_2_Open_1_1"
-				(pin passive line
-					(at -3.81 0 0)
-					(length 2.54)
-					(name "A"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 3.81 0 180)
-					(length 2.54)
-					(name "B"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "2"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "MCU_RaspberryPi_RP2040:RP2040"
 			(pin_names
 				(offset 1.016)
@@ -4972,27 +3814,23 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Mechanical:MountingHole_Pad"
-			(pin_numbers
-				(hide yes)
-			)
+		(symbol "Mechanical:MountingHole"
 			(pin_names
 				(offset 1.016)
-				(hide yes)
 			)
 			(exclude_from_sim no)
 			(in_bom no)
 			(on_board yes)
 			(property "Reference" "H"
-				(at 0 6.35 0)
+				(at 0 5.08 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
 				)
 			)
-			(property "Value" "MountingHole_Pad"
-				(at 0 4.445 0)
+			(property "Value" "MountingHole"
+				(at 0 3.175 0)
 				(effects
 					(font
 						(size 1.27 1.27)
@@ -5017,7 +3855,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Mounting Hole with connection"
+			(property "Description" "Mounting Hole without connection"
 				(at 0 0 0)
 				(effects
 					(font
@@ -5035,7 +3873,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "MountingHole*Pad*"
+			(property "ki_fp_filters" "MountingHole*"
 				(at 0 0 0)
 				(effects
 					(font
@@ -5044,9 +3882,9 @@
 					(hide yes)
 				)
 			)
-			(symbol "MountingHole_Pad_0_1"
+			(symbol "MountingHole_0_1"
 				(circle
-					(center 0 1.27)
+					(center 0 0)
 					(radius 1.27)
 					(stroke
 						(width 1.27)
@@ -5054,26 +3892,6 @@
 					)
 					(fill
 						(type none)
-					)
-				)
-			)
-			(symbol "MountingHole_Pad_1_1"
-				(pin input line
-					(at 0 -2.54 90)
-					(length 2.54)
-					(name "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
 					)
 				)
 			)
@@ -8663,18 +7481,6 @@
 		(uuid 95cc52fa-b559-43c8-87ff-6cebcf9d8136)
 	)
 	(rectangle
-		(start 429.26 88.9)
-		(end 506.73 133.985)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(fill
-			(type none)
-		)
-		(uuid a21ccad3-2cca-40d8-a3e8-a4f7613344c2)
-	)
-	(rectangle
 		(start 19.05 106.68)
 		(end 128.27 162.56)
 		(stroke
@@ -8722,49 +7528,6 @@
 		)
 		(uuid ecca815c-5a77-4868-b948-b35340801c1f)
 	)
-	(rectangle
-		(start 422.91 311.15)
-		(end 490.22 336.55)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(fill
-			(type none)
-		)
-		(uuid fc8d1e71-f969-42ec-be3b-17d0060facb4)
-	)
-	(text "Extra TPs here are intended as solder points\nor pogo pin connections on future upgrades."
-		(exclude_from_sim no)
-		(at 94.742 20.828 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "035202a3-0239-40b4-8e1d-ea9260db8b40")
-	)
-	(text "IOs"
-		(exclude_from_sim no)
-		(at 456.438 87.63 0)
-		(effects
-			(font
-				(size 2.54 2.54)
-			)
-			(justify left bottom)
-		)
-		(uuid "14fe70b0-9bd0-4630-b78b-2180d2381b60")
-	)
-	(text "External Amp Tie In"
-		(exclude_from_sim no)
-		(at 457.454 309.626 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "292e9357-b622-4b74-b098-9d994c87ab26")
-	)
 	(text "Amplifier"
 		(exclude_from_sim no)
 		(at 282.194 276.606 0)
@@ -8774,16 +7537,6 @@
 			)
 		)
 		(uuid "2bc47237-ad6c-4b14-8836-d2ceaf1a63ae")
-	)
-	(text "Extra TPs here are intended as solder points for future upgrades.\nUpgrades can be installed using castellated holes and soldering\ndirectly to the back of this PCB."
-		(exclude_from_sim no)
-		(at 467.106 139.954 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "300cb2e1-4ef3-49ce-8df0-e7426f1d0393")
 	)
 	(text "Battery Charging"
 		(exclude_from_sim no)
@@ -8806,16 +7559,6 @@
 			(justify left bottom)
 		)
 		(uuid "3cd80ee8-2db9-4a2c-8c47-4cc278470a3f")
-	)
-	(text "Ground points for upgrades provide\nmechanical and electrical connection.\nPlace these around the perimeter of\nthe planned upgrade board footprint."
-		(exclude_from_sim no)
-		(at 530.606 102.362 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "3cf9a22a-b399-4c1b-8827-823751093886")
 	)
 	(text "3.3V Regulator"
 		(exclude_from_sim no)
@@ -8871,16 +7614,6 @@
 			)
 		)
 		(uuid "67be5eaa-89e2-4aa5-92ee-ffea1d60ebf3")
-	)
-	(text "Both jumpers soldered for standalone operation.\nDesolder for external amp stage.\nTwo jumpers creates isolation & distance between in and out.\nExternal amp is expected to ground the stub between jumpers.\nExt amp must also provide it's own ESD protection."
-		(exclude_from_sim no)
-		(at 458.216 342.9 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "82e4448d-0406-415e-beb4-f219c152898c")
 	)
 	(text "Make sure C10 is close to pin 44 of RP2040"
 		(exclude_from_sim no)
@@ -8990,22 +7723,10 @@
 		(uuid "03ac563d-4d9d-432f-b818-16aa355e3f26")
 	)
 	(junction
-		(at 523.24 113.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "03ebe048-e7fc-472b-9ebb-6f5b87faa0ad")
-	)
-	(junction
 		(at 269.24 110.49)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "04ea0d2c-d31e-4863-9702-0c02ad6a96b9")
-	)
-	(junction
-		(at 520.7 113.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "04f939cb-e733-4c08-84b1-ff1f8997cf19")
 	)
 	(junction
 		(at 57.15 53.34)
@@ -9140,12 +7861,6 @@
 		(uuid "34208e48-632b-4087-bba5-2a58da0bd579")
 	)
 	(junction
-		(at 525.78 113.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "34455b0e-54bc-45aa-9f56-ee4d0fad01bd")
-	)
-	(junction
 		(at 53.34 199.39)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -9168,12 +7883,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "39db31d8-6cbd-40aa-bcd4-d738706aff08")
-	)
-	(junction
-		(at 533.4 113.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "40a5d019-8b7a-48e4-a000-1a22ff3273b7")
 	)
 	(junction
 		(at 400.05 327.66)
@@ -9248,12 +7957,6 @@
 		(uuid "5521ecb9-f3a1-4ad5-9cf0-39180d5c2621")
 	)
 	(junction
-		(at 466.09 123.19)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "57b7626f-0338-4328-a8f8-bed1901f093f")
-	)
-	(junction
 		(at 111.76 302.26)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -9270,12 +7973,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "5cbc9e08-8850-4b4d-9987-2303441d27a5")
-	)
-	(junction
-		(at 535.94 113.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "5d17cb11-953e-4eca-b962-bb97930b13f6")
 	)
 	(junction
 		(at 410.21 320.04)
@@ -9300,12 +7997,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "6b8be0f1-07be-4754-b6ab-274014c6bd40")
-	)
-	(junction
-		(at 554.99 355.6)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "6c91ca02-6ddc-4ae4-b9d9-8fc246403905")
 	)
 	(junction
 		(at 212.09 194.31)
@@ -9368,12 +8059,6 @@
 		(uuid "7f182f5a-c5f5-4065-9226-def39c55cbba")
 	)
 	(junction
-		(at 530.86 113.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "803d647e-1954-414f-bb7d-3bcffd838757")
-	)
-	(junction
 		(at 91.44 223.52)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -9410,12 +8095,6 @@
 		(uuid "87611c77-89e3-4d1d-b7df-89298431f40c")
 	)
 	(junction
-		(at 118.11 320.04)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "8ce13c72-4e6f-4ff7-b641-9231751a4054")
-	)
-	(junction
 		(at 99.06 295.91)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -9446,24 +8125,6 @@
 		(uuid "98cd3bac-c75c-4ddd-9673-a2b461a682a3")
 	)
 	(junction
-		(at 473.71 102.87)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "996fbe10-b582-46f3-996a-3500cc4ed8e9")
-	)
-	(junction
-		(at 528.32 113.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "9a3e8728-7be5-48b2-93d9-905e06ab97a8")
-	)
-	(junction
-		(at 328.93 320.04)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "9d79a8c2-f197-4b3f-903a-0d8d7f44106e")
-	)
-	(junction
 		(at 304.8 101.6)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -9486,12 +8147,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "a8303760-05d9-44f9-ae5a-35a47d6da2b5")
-	)
-	(junction
-		(at 554.99 360.68)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "a8392c8c-351c-4e20-9471-4e225a4eb0e7")
 	)
 	(junction
 		(at 201.93 327.66)
@@ -9548,22 +8203,10 @@
 		(uuid "bad220ad-c117-4699-a09c-649f1ff65931")
 	)
 	(junction
-		(at 308.61 341.63)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "bd8dcc0a-0a4d-48a6-910b-c04987da0424")
-	)
-	(junction
 		(at 99.06 308.61)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "bdd1616c-ef3a-4c20-a622-ea46cab4dc2e")
-	)
-	(junction
-		(at 233.68 320.04)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "c0d03ceb-fb25-4139-818b-56d8417325da")
 	)
 	(junction
 		(at 276.86 110.49)
@@ -9584,12 +8227,6 @@
 		(uuid "c4126dbc-6552-4992-92d6-975cbd1711fd")
 	)
 	(junction
-		(at 450.85 123.19)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "c8c10c0d-1253-4b3f-a3e2-0d0e85e84c88")
-	)
-	(junction
 		(at 127 223.52)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -9600,12 +8237,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "c97f1b08-2926-43b2-b4ef-b5c0fa718b69")
-	)
-	(junction
-		(at 554.99 365.76)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "caf3dcbd-37d0-4165-8861-5c08373610a3")
 	)
 	(junction
 		(at 295.91 344.17)
@@ -9680,12 +8311,6 @@
 		(uuid "e7446060-008f-4151-9180-5500fb591f6b")
 	)
 	(junction
-		(at 450.85 100.33)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "e7d024bc-39ad-48cf-b32f-b689112e8962")
-	)
-	(junction
 		(at 151.13 320.04)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -9740,12 +8365,6 @@
 		(uuid "faa80493-fc0f-4c31-811e-c6d76b56ea25")
 	)
 	(junction
-		(at 538.48 113.03)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "fc795f7f-e61f-4701-9132-c2bf21a64c74")
-	)
-	(junction
 		(at 304.8 90.17)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -9772,16 +8391,6 @@
 			(type default)
 		)
 		(uuid "0227fa5c-4409-4e05-a08a-3339d0084ae4")
-	)
-	(wire
-		(pts
-			(xy 554.99 350.52) (xy 554.99 355.6)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0251d015-9f0c-4d56-b262-3cf9cfc02719")
 	)
 	(wire
 		(pts
@@ -9845,16 +8454,6 @@
 	)
 	(wire
 		(pts
-			(xy 535.94 113.03) (xy 535.94 114.3)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "04ed9cce-a50e-44ab-89fc-c2fc5dde81ac")
-	)
-	(wire
-		(pts
 			(xy 306.07 125.73) (xy 306.07 130.81)
 		)
 		(stroke
@@ -9875,16 +8474,6 @@
 	)
 	(wire
 		(pts
-			(xy 533.4 113.03) (xy 535.94 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "076fe036-c3f3-43ad-96df-0ff570cf45b3")
-	)
-	(wire
-		(pts
 			(xy 316.23 90.17) (xy 327.66 90.17)
 		)
 		(stroke
@@ -9902,16 +8491,6 @@
 			(type default)
 		)
 		(uuid "09ff3a01-58cf-4705-a007-d17a1e1c8546")
-	)
-	(wire
-		(pts
-			(xy 464.82 105.41) (xy 481.33 105.41)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0c7dd69f-8ae8-4e43-b61a-2449b2db6993")
 	)
 	(wire
 		(pts
@@ -9942,16 +8521,6 @@
 			(type default)
 		)
 		(uuid "0cdfe8af-6996-4880-823a-e8b893c6b522")
-	)
-	(wire
-		(pts
-			(xy 533.4 111.76) (xy 533.4 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0dc91300-b1fa-41c5-b27c-dc7c5d2414e0")
 	)
 	(wire
 		(pts
@@ -10005,16 +8574,6 @@
 	)
 	(wire
 		(pts
-			(xy 525.78 111.76) (xy 525.78 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "10045555-63e4-474b-aedd-1a12771ec001")
-	)
-	(wire
-		(pts
 			(xy 212.09 181.61) (xy 212.09 184.15)
 		)
 		(stroke
@@ -10055,16 +8614,6 @@
 	)
 	(wire
 		(pts
-			(xy 457.2 320.04) (xy 469.9 320.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1290a3c0-56e4-4d32-aa55-7983811e307a")
-	)
-	(wire
-		(pts
 			(xy 247.65 88.9) (xy 247.65 90.17)
 		)
 		(stroke
@@ -10072,16 +8621,6 @@
 			(type default)
 		)
 		(uuid "12928da0-ec55-4b33-ab19-b0c196461458")
-	)
-	(wire
-		(pts
-			(xy 530.86 113.03) (xy 530.86 120.65)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "12fb90a0-a82a-498d-80b4-e8e68123089b")
 	)
 	(wire
 		(pts
@@ -10102,16 +8641,6 @@
 			(type default)
 		)
 		(uuid "14771945-fa22-46d8-bdab-8a15a035e8de")
-	)
-	(wire
-		(pts
-			(xy 538.48 113.03) (xy 538.48 114.3)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1605f10c-f4d8-4bf9-a729-c31b15e4adba")
 	)
 	(wire
 		(pts
@@ -10152,16 +8681,6 @@
 			(type default)
 		)
 		(uuid "1a41d84a-edbc-4f7f-8e91-d69b0917f1e9")
-	)
-	(wire
-		(pts
-			(xy 464.82 107.95) (xy 481.33 107.95)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1a6546af-5ac0-4bec-9ea5-338dd5102814")
 	)
 	(wire
 		(pts
@@ -10245,16 +8764,6 @@
 	)
 	(wire
 		(pts
-			(xy 435.61 123.19) (xy 450.85 123.19)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "1ecf401b-a56d-48d7-9d4a-eaf13fcb98cb")
-	)
-	(wire
-		(pts
 			(xy 299.72 133.35) (xy 311.15 133.35)
 		)
 		(stroke
@@ -10272,16 +8781,6 @@
 			(type default)
 		)
 		(uuid "1ff6bf17-b3fc-42e4-bb9f-4e47d1d694be")
-	)
-	(wire
-		(pts
-			(xy 466.09 125.73) (xy 466.09 123.19)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2043fecb-406f-4a4e-9383-8de98801df34")
 	)
 	(wire
 		(pts
@@ -10315,17 +8814,7 @@
 	)
 	(wire
 		(pts
-			(xy 554.99 360.68) (xy 556.26 360.68)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "233831bc-7da2-4810-a40c-904e31859865")
-	)
-	(wire
-		(pts
-			(xy 114.3 320.04) (xy 118.11 320.04)
+			(xy 114.3 320.04) (xy 151.13 320.04)
 		)
 		(stroke
 			(width 0)
@@ -10342,16 +8831,6 @@
 			(type default)
 		)
 		(uuid "23d3af5d-af20-473c-a561-fbb0d7c69e3e")
-	)
-	(wire
-		(pts
-			(xy 450.85 100.33) (xy 452.12 100.33)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "23df8dd0-0d38-4b33-9cad-86f04332eb07")
 	)
 	(wire
 		(pts
@@ -10515,16 +8994,6 @@
 	)
 	(wire
 		(pts
-			(xy 525.78 113.03) (xy 528.32 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "2db9095e-820a-4bfc-936e-299334f66e3d")
-	)
-	(wire
-		(pts
 			(xy 73.66 138.43) (xy 78.74 138.43)
 		)
 		(stroke
@@ -10565,16 +9034,6 @@
 	)
 	(wire
 		(pts
-			(xy 496.57 114.3) (xy 496.57 116.84)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "30f97328-96da-494b-9e99-2c43773d5ef7")
-	)
-	(wire
-		(pts
 			(xy 449.58 180.34) (xy 466.09 180.34)
 		)
 		(stroke
@@ -10585,7 +9044,7 @@
 	)
 	(wire
 		(pts
-			(xy 308.61 311.15) (xy 308.61 341.63)
+			(xy 308.61 311.15) (xy 308.61 354.33)
 		)
 		(stroke
 			(width 0)
@@ -10785,16 +9244,6 @@
 	)
 	(wire
 		(pts
-			(xy 466.09 123.19) (xy 481.33 123.19)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3bed42be-98e1-4cc4-9fdc-09c7beea5ba8")
-	)
-	(wire
-		(pts
 			(xy 439.42 180.34) (xy 436.88 180.34)
 		)
 		(stroke
@@ -10855,16 +9304,6 @@
 	)
 	(wire
 		(pts
-			(xy 233.68 320.04) (xy 236.22 320.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "3e48a44a-217f-4174-be04-f044ac0d2277")
-	)
-	(wire
-		(pts
 			(xy 76.2 184.15) (xy 76.2 186.69)
 		)
 		(stroke
@@ -10892,16 +9331,6 @@
 			(type default)
 		)
 		(uuid "3fb09daa-59bd-4139-9561-69d89c263cfe")
-	)
-	(wire
-		(pts
-			(xy 464.82 113.03) (xy 481.33 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "409dc9d9-0f52-4387-82df-3c92c4497e2f")
 	)
 	(wire
 		(pts
@@ -10982,16 +9411,6 @@
 			(type default)
 		)
 		(uuid "4823c7c8-bc37-447a-a2d5-86580144f07e")
-	)
-	(wire
-		(pts
-			(xy 464.82 100.33) (xy 481.33 100.33)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "48626ffd-1f9f-4aaa-82db-99933af7198c")
 	)
 	(wire
 		(pts
@@ -11135,16 +9554,6 @@
 	)
 	(wire
 		(pts
-			(xy 491.49 109.22) (xy 496.57 109.22)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4e29f805-6a8b-4b0b-a1c2-ef836dfbe9bd")
-	)
-	(wire
-		(pts
 			(xy 214.63 320.04) (xy 217.17 320.04)
 		)
 		(stroke
@@ -11152,26 +9561,6 @@
 			(type default)
 		)
 		(uuid "4ee4fcc4-7187-40bd-91a9-7365b99f7d6a")
-	)
-	(wire
-		(pts
-			(xy 450.85 123.19) (xy 452.12 123.19)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "4f118704-effc-431e-b622-a2fcb29c8a1b")
-	)
-	(wire
-		(pts
-			(xy 491.49 114.3) (xy 496.57 114.3)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "516b7c58-f528-4e1d-975a-d46d6544901c")
 	)
 	(wire
 		(pts
@@ -11205,7 +9594,7 @@
 	)
 	(wire
 		(pts
-			(xy 326.39 320.04) (xy 328.93 320.04)
+			(xy 326.39 320.04) (xy 379.73 320.04)
 		)
 		(stroke
 			(width 0)
@@ -11285,16 +9674,6 @@
 	)
 	(wire
 		(pts
-			(xy 523.24 113.03) (xy 525.78 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "56b2888c-8559-4cd5-84da-851409bf0914")
-	)
-	(wire
-		(pts
 			(xy 114.3 289.56) (xy 111.76 289.56)
 		)
 		(stroke
@@ -11312,16 +9691,6 @@
 			(type default)
 		)
 		(uuid "575eff88-a0af-42b3-b035-d8a26f656200")
-	)
-	(wire
-		(pts
-			(xy 464.82 118.11) (xy 481.33 118.11)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "57808972-aa98-4381-a9a0-e41ce8942847")
 	)
 	(wire
 		(pts
@@ -11445,16 +9814,6 @@
 	)
 	(wire
 		(pts
-			(xy 530.86 111.76) (xy 530.86 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5cdf909a-3723-4ad3-a786-9b7f9deff702")
-	)
-	(wire
-		(pts
 			(xy 443.23 220.98) (xy 454.66 220.98)
 		)
 		(stroke
@@ -11475,26 +9834,6 @@
 	)
 	(wire
 		(pts
-			(xy 528.32 113.03) (xy 530.86 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5ec5af93-1a5a-4bce-b27f-8dc806855c92")
-	)
-	(wire
-		(pts
-			(xy 538.48 111.76) (xy 538.48 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5fece2a6-592f-430c-8e6c-066f9bff29c9")
-	)
-	(wire
-		(pts
 			(xy 299.72 130.81) (xy 306.07 130.81)
 		)
 		(stroke
@@ -11502,16 +9841,6 @@
 			(type default)
 		)
 		(uuid "6123d737-4e63-43e6-b88c-f03bc7239442")
-	)
-	(wire
-		(pts
-			(xy 554.99 350.52) (xy 556.26 350.52)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "615fddc8-1c0d-419e-a26d-0eabc9054889")
 	)
 	(wire
 		(pts
@@ -11725,16 +10054,6 @@
 	)
 	(wire
 		(pts
-			(xy 523.24 113.03) (xy 523.24 114.3)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6c45506d-0aad-4272-bcc0-ed7c446c5918")
-	)
-	(wire
-		(pts
 			(xy 38.1 306.07) (xy 49.53 306.07)
 		)
 		(stroke
@@ -11775,16 +10094,6 @@
 	)
 	(wire
 		(pts
-			(xy 328.93 320.04) (xy 379.73 320.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6f25ee74-e727-4dfe-9489-714641c0ba62")
-	)
-	(wire
-		(pts
 			(xy 304.8 91.44) (xy 304.8 90.17)
 		)
 		(stroke
@@ -11812,26 +10121,6 @@
 			(type default)
 		)
 		(uuid "6fc5d731-1a41-4957-9ba3-b6bf910e109d")
-	)
-	(wire
-		(pts
-			(xy 464.82 115.57) (xy 481.33 115.57)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "6fc64a95-c934-4573-ba7e-6c31a8ab7602")
-	)
-	(wire
-		(pts
-			(xy 464.82 110.49) (xy 481.33 110.49)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "70685d0d-6b41-48b4-821b-e815d85aa8ba")
 	)
 	(wire
 		(pts
@@ -11882,16 +10171,6 @@
 			(type default)
 		)
 		(uuid "755270dc-f1c9-47f2-b3b8-febdda84f983")
-	)
-	(wire
-		(pts
-			(xy 554.99 355.6) (xy 556.26 355.6)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "755c9c27-268f-46ca-93fc-66775f14ddd6")
 	)
 	(wire
 		(pts
@@ -12025,16 +10304,6 @@
 	)
 	(wire
 		(pts
-			(xy 233.68 331.47) (xy 233.68 320.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7c74fa67-d94a-49d9-8ee3-8498e94335da")
-	)
-	(wire
-		(pts
 			(xy 407.67 320.04) (xy 410.21 320.04)
 		)
 		(stroke
@@ -12075,16 +10344,6 @@
 	)
 	(wire
 		(pts
-			(xy 450.85 123.19) (xy 450.85 125.73)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7f04d273-c95f-4987-9889-4bf3c733687d")
-	)
-	(wire
-		(pts
 			(xy 283.21 344.17) (xy 285.75 344.17)
 		)
 		(stroke
@@ -12105,16 +10364,6 @@
 	)
 	(wire
 		(pts
-			(xy 435.61 107.95) (xy 452.12 107.95)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "809cb425-21e6-4146-ae32-a7191388f7ab")
-	)
-	(wire
-		(pts
 			(xy 293.37 344.17) (xy 295.91 344.17)
 		)
 		(stroke
@@ -12122,16 +10371,6 @@
 			(type default)
 		)
 		(uuid "81a17b0f-1ba2-4956-b11e-44d470242357")
-	)
-	(wire
-		(pts
-			(xy 533.4 113.03) (xy 533.4 114.3)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "81c5e18b-e539-47d1-8508-05b562cfc38c")
 	)
 	(wire
 		(pts
@@ -12205,26 +10444,6 @@
 	)
 	(wire
 		(pts
-			(xy 435.61 102.87) (xy 452.12 102.87)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "86a2de1e-4696-4f27-ac30-3ab153d605fd")
-	)
-	(wire
-		(pts
-			(xy 435.61 113.03) (xy 452.12 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "86ce65cb-d3b2-4596-8cf4-3d8fb923d68b")
-	)
-	(wire
-		(pts
 			(xy 76.2 204.47) (xy 76.2 207.01)
 		)
 		(stroke
@@ -12295,16 +10514,6 @@
 	)
 	(wire
 		(pts
-			(xy 491.49 111.76) (xy 496.57 111.76)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8a2f0675-2118-44c0-8196-3ec4138b264e")
-	)
-	(wire
-		(pts
 			(xy 350.52 101.6) (xy 361.95 101.6)
 		)
 		(stroke
@@ -12322,26 +10531,6 @@
 			(type default)
 		)
 		(uuid "8bc7afc3-875a-4479-9357-aebaf652475a")
-	)
-	(wire
-		(pts
-			(xy 473.71 96.52) (xy 473.71 102.87)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8cbf3180-e1e5-473e-9041-e5cbdd645027")
-	)
-	(wire
-		(pts
-			(xy 554.99 369.57) (xy 554.99 365.76)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "8d279aca-723a-4b3e-abb7-83500dcb8bd9")
 	)
 	(wire
 		(pts
@@ -12402,26 +10591,6 @@
 			(type default)
 		)
 		(uuid "905e9da5-fd9e-4b2d-9bee-9342007824f1")
-	)
-	(wire
-		(pts
-			(xy 308.61 341.63) (xy 308.61 354.33)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "91eee3bc-a0dc-491e-8481-406f2a66751b")
-	)
-	(wire
-		(pts
-			(xy 464.82 123.19) (xy 466.09 123.19)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "93306ff6-e45d-4cbc-8691-9378a40a7eb4")
 	)
 	(wire
 		(pts
@@ -12555,16 +10724,6 @@
 	)
 	(wire
 		(pts
-			(xy 496.57 109.22) (xy 496.57 106.68)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "97dac1ba-17a1-4927-b1c0-142e6c86b736")
-	)
-	(wire
-		(pts
 			(xy 347.98 293.37) (xy 359.41 293.37)
 		)
 		(stroke
@@ -12625,16 +10784,6 @@
 	)
 	(wire
 		(pts
-			(xy 528.32 113.03) (xy 528.32 114.3)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9c1ed9db-54f1-4100-a59d-0ed7fa6fb9c3")
-	)
-	(wire
-		(pts
 			(xy 410.21 320.04) (xy 410.21 321.31)
 		)
 		(stroke
@@ -12675,16 +10824,6 @@
 	)
 	(wire
 		(pts
-			(xy 435.61 118.11) (xy 452.12 118.11)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9d5d8839-8100-485e-bad2-e47de7a12b7f")
-	)
-	(wire
-		(pts
 			(xy 54.61 43.18) (xy 73.66 43.18)
 		)
 		(stroke
@@ -12722,16 +10861,6 @@
 			(type default)
 		)
 		(uuid "9ee1cc16-38f7-40a1-9d92-0284daec91a2")
-	)
-	(wire
-		(pts
-			(xy 535.94 111.76) (xy 535.94 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9f3a26e7-3c60-4beb-86b3-0e8e8fb49dfe")
 	)
 	(wire
 		(pts
@@ -12805,16 +10934,6 @@
 	)
 	(wire
 		(pts
-			(xy 520.7 111.76) (xy 520.7 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a2d2e367-752c-4c00-8f34-8396076cc724")
-	)
-	(wire
-		(pts
 			(xy 236.22 157.48) (xy 222.25 157.48)
 		)
 		(stroke
@@ -12852,16 +10971,6 @@
 			(type default)
 		)
 		(uuid "a4b0e87e-c8b6-4de6-bfb0-9b8dc86a5dfd")
-	)
-	(wire
-		(pts
-			(xy 554.99 355.6) (xy 554.99 360.68)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a5072da6-3ff4-493c-b345-cfe684cae74a")
 	)
 	(wire
 		(pts
@@ -12932,16 +11041,6 @@
 			(type default)
 		)
 		(uuid "a831372d-4a6f-4cab-b66d-4ac6cebf1593")
-	)
-	(wire
-		(pts
-			(xy 435.61 100.33) (xy 450.85 100.33)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a8db5588-224a-403c-a131-33460dbfaccd")
 	)
 	(wire
 		(pts
@@ -13025,16 +11124,6 @@
 	)
 	(wire
 		(pts
-			(xy 464.82 102.87) (xy 473.71 102.87)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "aec82338-c959-4b1f-ab45-a1fa998fff20")
-	)
-	(wire
-		(pts
 			(xy 39.37 138.43) (xy 39.37 146.05)
 		)
 		(stroke
@@ -13052,16 +11141,6 @@
 			(type default)
 		)
 		(uuid "afdeb44b-4059-466e-8f7f-8b6bbbbed939")
-	)
-	(wire
-		(pts
-			(xy 435.61 110.49) (xy 452.12 110.49)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b039cd30-8805-4345-a619-63fdf7af839d")
 	)
 	(wire
 		(pts
@@ -13095,16 +11174,6 @@
 	)
 	(wire
 		(pts
-			(xy 435.61 105.41) (xy 452.12 105.41)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b116087a-18b3-4416-84ec-e065184bb3aa")
-	)
-	(wire
-		(pts
 			(xy 400.05 320.04) (xy 402.59 320.04)
 		)
 		(stroke
@@ -13132,16 +11201,6 @@
 			(type default)
 		)
 		(uuid "b1a2fc3a-a118-414c-88ee-8a615b423ac4")
-	)
-	(wire
-		(pts
-			(xy 464.82 120.65) (xy 481.33 120.65)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b24d6afb-1b94-42f0-90c9-0a60327b99dd")
 	)
 	(wire
 		(pts
@@ -13235,26 +11294,6 @@
 	)
 	(wire
 		(pts
-			(xy 535.94 113.03) (xy 538.48 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b6caf492-a8a2-42da-9863-1c3d3e62587a")
-	)
-	(wire
-		(pts
-			(xy 520.7 113.03) (xy 523.24 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b85a56c6-a769-4fff-83b4-8ecc9bcddcc0")
-	)
-	(wire
-		(pts
 			(xy 31.75 73.66) (xy 31.75 83.82)
 		)
 		(stroke
@@ -13295,7 +11334,7 @@
 	)
 	(wire
 		(pts
-			(xy 217.17 320.04) (xy 233.68 320.04)
+			(xy 217.17 320.04) (xy 236.22 320.04)
 		)
 		(stroke
 			(width 0)
@@ -13312,16 +11351,6 @@
 			(type default)
 		)
 		(uuid "be28c797-9778-4219-9c7a-20ff20f77e63")
-	)
-	(wire
-		(pts
-			(xy 554.99 360.68) (xy 554.99 365.76)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "beea9f73-d009-46a7-b131-7d902450b8c0")
 	)
 	(wire
 		(pts
@@ -13365,16 +11394,6 @@
 	)
 	(wire
 		(pts
-			(xy 528.32 111.76) (xy 528.32 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c27fd9da-865d-4108-b85a-dbc7a47a9700")
-	)
-	(wire
-		(pts
 			(xy 22.86 201.93) (xy 22.86 210.82)
 		)
 		(stroke
@@ -13402,16 +11421,6 @@
 			(type default)
 		)
 		(uuid "c4b7ccac-8a8f-462a-838b-4691d38dfd6c")
-	)
-	(wire
-		(pts
-			(xy 450.85 100.33) (xy 450.85 99.06)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c4db5b43-90db-4a4f-9369-fc7695ff4d94")
 	)
 	(wire
 		(pts
@@ -13512,26 +11521,6 @@
 			(type default)
 		)
 		(uuid "c7e75323-b8f1-4356-b7c1-4c019aa40b42")
-	)
-	(wire
-		(pts
-			(xy 520.7 113.03) (xy 520.7 114.3)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c801e6fd-d997-4689-a740-2472a3ce5ada")
-	)
-	(wire
-		(pts
-			(xy 530.86 113.03) (xy 533.4 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "c824566f-f00c-4d2f-97e5-99446e455639")
 	)
 	(wire
 		(pts
@@ -13725,16 +11714,6 @@
 	)
 	(wire
 		(pts
-			(xy 443.23 320.04) (xy 449.58 320.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ceedde4e-6239-44db-a0ee-c6b2b0f789e9")
-	)
-	(wire
-		(pts
 			(xy 327.66 90.17) (xy 339.09 90.17)
 		)
 		(stroke
@@ -13832,16 +11811,6 @@
 			(type default)
 		)
 		(uuid "d28ea6e5-5abe-4eff-b012-d3bf3e67f8b0")
-	)
-	(wire
-		(pts
-			(xy 118.11 320.04) (xy 151.13 320.04)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "d29b157d-0585-4a60-ae9b-9d9db99f6897")
 	)
 	(wire
 		(pts
@@ -14095,16 +12064,6 @@
 	)
 	(wire
 		(pts
-			(xy 554.99 365.76) (xy 556.26 365.76)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "dac184db-0bf5-4578-aded-c2c01dce9fe2")
-	)
-	(wire
-		(pts
 			(xy 339.09 101.6) (xy 327.66 101.6)
 		)
 		(stroke
@@ -14132,16 +12091,6 @@
 			(type default)
 		)
 		(uuid "dc78ee98-e52c-4811-bc97-92b7e8f27d61")
-	)
-	(wire
-		(pts
-			(xy 523.24 111.76) (xy 523.24 113.03)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "dc82d329-24e4-4dc6-b149-a01da3c8d53a")
 	)
 	(wire
 		(pts
@@ -14222,16 +12171,6 @@
 			(type default)
 		)
 		(uuid "e049c02b-0a90-483c-8ad0-1970a8b7fcad")
-	)
-	(wire
-		(pts
-			(xy 435.61 115.57) (xy 452.12 115.57)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e13396e6-921c-40eb-9881-cac67f6b08a7")
 	)
 	(wire
 		(pts
@@ -14365,7 +12304,7 @@
 	)
 	(wire
 		(pts
-			(xy 434.34 320.04) (xy 435.61 320.04)
+			(xy 434.34 320.04) (xy 469.9 320.04)
 		)
 		(stroke
 			(width 0)
@@ -14535,16 +12474,6 @@
 	)
 	(wire
 		(pts
-			(xy 435.61 120.65) (xy 452.12 120.65)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ef9b9894-9b98-477a-93d5-6ce8da35d5ac")
-	)
-	(wire
-		(pts
 			(xy 91.44 223.52) (xy 100.33 223.52)
 		)
 		(stroke
@@ -14625,16 +12554,6 @@
 	)
 	(wire
 		(pts
-			(xy 525.78 113.03) (xy 525.78 114.3)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f39977a2-b590-4cc6-bd09-196732f9c206")
-	)
-	(wire
-		(pts
 			(xy 49.53 303.53) (xy 49.53 306.07)
 		)
 		(stroke
@@ -14712,16 +12631,6 @@
 			(type default)
 		)
 		(uuid "f7f217b5-ddf3-4e8d-bbd3-3abd6a0d602a")
-	)
-	(wire
-		(pts
-			(xy 473.71 102.87) (xy 481.33 102.87)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f8a7754e-ab39-4f10-8343-a1b3a94f9621")
 	)
 	(wire
 		(pts
@@ -14833,26 +12742,6 @@
 		)
 		(uuid "ff9ff493-51d8-426c-bf37-b4e3d7624126")
 	)
-	(label "ChgSense"
-		(at 466.09 107.95 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "0250eb64-dfd5-40e7-8662-d06940f7415f")
-	)
-	(label "CLK1"
-		(at 450.85 105.41 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "0d2c9c4b-5162-4c02-ba10-28600d1a679a")
-	)
 	(label "GPIO14"
 		(at 314.96 176.53 180)
 		(effects
@@ -14882,16 +12771,6 @@
 			(justify left bottom)
 		)
 		(uuid "10ad0549-131d-433a-9770-6b620df943b7")
-	)
-	(label "GPIO18"
-		(at 450.85 113.03 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "10d6dc94-9b20-4320-ad1d-1bf1474552e7")
 	)
 	(label "QSPI_SD3"
 		(at 478.79 193.04 0)
@@ -14932,26 +12811,6 @@
 			(justify right bottom)
 		)
 		(uuid "1abf4953-a2f3-4314-947d-99954e80b0ef")
-	)
-	(label "GPIO26_ADC0"
-		(at 450.85 118.11 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "267aaf22-26d6-4884-aff2-fb6cab9b5e39")
-	)
-	(label "CLK2"
-		(at 466.09 105.41 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "29a1bce4-c1e0-49d2-abeb-1ebcf94cbc38")
 	)
 	(label "CC2Sense"
 		(at 314.96 217.17 180)
@@ -15003,16 +12862,6 @@
 		)
 		(uuid "39ed626a-0815-460d-815c-4b2a6623d6da")
 	)
-	(label "SWCLK"
-		(at 496.57 106.68 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "3b89dcab-2008-4eaf-81fb-f9e16f15f917")
-	)
 	(label "USB_D+"
 		(at 332.74 125.73 180)
 		(effects
@@ -15052,16 +12901,6 @@
 			(justify left bottom)
 		)
 		(uuid "48387d69-4ed1-40f1-bd4c-b9b59919d678")
-	)
-	(label "GPIO17"
-		(at 466.09 110.49 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "487cf331-81d6-4969-904f-261e35fc872e")
 	)
 	(label "QSPI_SD3"
 		(at 222.25 153.67 0)
@@ -15103,16 +12942,6 @@
 		)
 		(uuid "557d050d-49da-4e6c-b2d8-0d673f531f3a")
 	)
-	(label "GPIO19"
-		(at 466.09 113.03 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "5c696f19-931b-44d4-99d6-fa574f668ae3")
-	)
 	(label "CLK1"
 		(at 124.46 341.63 0)
 		(effects
@@ -15132,16 +12961,6 @@
 			(justify left bottom)
 		)
 		(uuid "63375836-528e-4f39-bcf1-3899d73c858e")
-	)
-	(label "RUN"
-		(at 450.85 102.87 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "664e7c54-29e4-4d1d-822e-bcc0e14ec6a8")
 	)
 	(label "USB ESD D-"
 		(at 80.01 50.8 90)
@@ -15213,16 +13032,6 @@
 		)
 		(uuid "7e772945-1464-4e9b-92c8-438bd41a63cf")
 	)
-	(label "GPIO14"
-		(at 450.85 107.95 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "7ecb68c7-8c95-4aea-a2b7-6d60a5164f99")
-	)
 	(label "XIN"
 		(at 486.41 220.98 180)
 		(effects
@@ -15262,26 +13071,6 @@
 			(justify left bottom)
 		)
 		(uuid "96cdad23-2bd1-4bee-bdfd-a390e1eb41d8")
-	)
-	(label "SWITCHED_VBATT"
-		(at 466.09 100.33 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "988b1876-dbe4-4d3e-acfc-40d51886db7f")
-	)
-	(label "CC2Sense"
-		(at 466.09 120.65 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "9aa4d692-c3a1-4fc3-b6ac-c700446bcf94")
 	)
 	(label "CLK2"
 		(at 124.46 345.44 0)
@@ -15363,16 +13152,6 @@
 		)
 		(uuid "aea32f6b-7acc-4116-9132-0246050ae45e")
 	)
-	(label "CC1Sense"
-		(at 466.09 118.11 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "affc4a55-108e-4fff-b0be-627954e5e470")
-	)
 	(label "GPIO19"
 		(at 314.96 189.23 180)
 		(effects
@@ -15383,16 +13162,6 @@
 		)
 		(uuid "bda8e14f-b278-4e47-9e21-a237075e0326")
 	)
-	(label "GPIO20"
-		(at 450.85 115.57 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "c2bfc6a6-23ec-4427-970b-0a388e24fd6e")
-	)
 	(label "QSPI_SS"
 		(at 222.25 142.24 0)
 		(effects
@@ -15402,16 +13171,6 @@
 			(justify left bottom)
 		)
 		(uuid "c6125a44-5e65-43af-9cd7-c8bc4162bca7")
-	)
-	(label "SWD"
-		(at 496.57 116.84 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "c6977e92-5679-431b-922f-0cc974249f56")
 	)
 	(label "I2C0 SDA"
 		(at 257.81 321.31 180)
@@ -15443,16 +13202,6 @@
 		)
 		(uuid "cc0ace1c-efb3-4c50-9f00-81e56d3aea71")
 	)
-	(label "GPIO21"
-		(at 466.09 115.57 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "d5a8dea4-e822-4004-8cf8-95ab88fb6e1e")
-	)
 	(label "QSPI_SCLK"
 		(at 478.79 182.88 0)
 		(effects
@@ -15462,26 +13211,6 @@
 			(justify left bottom)
 		)
 		(uuid "d63bbef4-046b-4827-9f29-0bf28fa28525")
-	)
-	(label "GPIO16"
-		(at 450.85 110.49 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "d97a3ce8-5af0-44df-b390-d36fa96ebce6")
-	)
-	(label "GPIO28_ADC2"
-		(at 450.85 120.65 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "dea5e36a-5a2c-4e0c-ab70-5e586bfa8772")
 	)
 	(label "~{USB_BOOT}"
 		(at 452.12 180.34 0)
@@ -16448,72 +14177,6 @@
 			(project "RP2040_minimal_r2"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "R4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 466.09 125.73 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "00000000-0000-0000-0000-00005ee21a10")
-		(property "Reference" "#PWR020"
-			(at 466.09 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 465.963 130.1242 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 466.09 125.73 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 466.09 125.73 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 466.09 125.73 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "e7afaa67-b956-4426-a9d6-b603d0319c4f")
-		)
-		(instances
-			(project "RP2040_minimal_r2"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "#PWR020")
 					(unit 1)
 				)
 			)
@@ -17769,72 +15432,6 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 450.85 125.73 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "00000000-0000-0000-0000-00005f2f6199")
-		(property "Reference" "#PWR021"
-			(at 450.85 132.08 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 450.723 130.1242 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 450.85 125.73 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 450.85 125.73 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 450.85 125.73 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "361b1178-cf47-49d4-86bb-aef769332728")
-		)
-		(instances
-			(project "RP2040_minimal_r2"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "#PWR021")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
 		(at 436.88 182.88 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -17970,72 +15567,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "L6")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 554.99 369.57 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "08d8de9e-1921-447d-b1db-7786eaf884fa")
-		(property "Reference" "#PWR043"
-			(at 554.99 375.92 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 554.99 374.65 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 554.99 369.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 554.99 369.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 554.99 369.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "d4689e90-4f3c-4c6d-9603-1041b10dd434")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "#PWR043")
 					(unit 1)
 				)
 			)
@@ -18247,142 +15778,6 @@
 			(project "picofox_kicad"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "R39")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 523.24 114.3 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "0d7606b9-232c-48e6-84e1-9353ec11858c")
-		(property "Reference" "TP46"
-			(at 524.764 116.332 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 524.764 118.872 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 518.16 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 518.16 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 523.24 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "1453e446-bd74-4864-b11a-e6e6e545a9dc")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP46")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 481.33 123.19 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "0fc7b87f-09c0-4663-9f40-eeaee8bcf974")
-		(property "Reference" "TP27"
-			(at 483.362 121.666 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 485.902 121.666 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 481.33 128.27 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 481.33 128.27 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 481.33 123.19 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "4ad6fefa-c551-4688-842b-414d169a2d8e")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP27")
 					(unit 1)
 				)
 			)
@@ -18667,141 +16062,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 328.93 143.51 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "1c59fdfb-fc8c-42b4-995d-77bdeca9a916")
-		(property "Reference" "TP5"
-			(at 331.47 138.9379 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 331.47 141.4779 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 334.01 143.51 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 334.01 143.51 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 328.93 143.51 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "87add81c-e422-4749-827d-9df2fedae646")
-		)
-		(instances
-			(project ""
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP5")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 435.61 120.65 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "20939118-6a9f-4785-8cb2-18b4ef8362b4")
-		(property "Reference" "TP25"
-			(at 433.578 122.174 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 431.038 122.174 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 435.61 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 435.61 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 435.61 120.65 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "d47a9b86-b555-4c10-a90f-991d8e443c95")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP25")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:L_Small")
 		(at 384.81 320.04 90)
 		(unit 1)
@@ -18950,140 +16210,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "R10")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 528.32 111.76 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "2787a083-d5ad-42b6-8aa2-812b15562398")
-		(property "Reference" "TP40"
-			(at 526.796 109.728 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 526.796 107.188 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 533.4 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 533.4 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 528.32 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "8c134724-7fb8-48be-9241-d35b9bcd4961")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP40")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 530.86 120.65 0)
-		(mirror y)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "283a29e2-ad8a-411f-ba6e-a5441a5ccf5e")
-		(property "Reference" "#PWR025"
-			(at 530.86 127 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 530.733 125.0442 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 530.86 120.65 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 530.86 120.65 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 530.86 120.65 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "cc3a4aa3-fea8-4eac-9292-0a401f77428f")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "#PWR025")
 					(unit 1)
 				)
 			)
@@ -19389,141 +16515,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 520.7 111.76 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "30f7e70f-e518-43e5-ac5b-be99c0706e35")
-		(property "Reference" "TP37"
-			(at 519.176 109.728 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 519.176 107.188 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 525.78 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 525.78 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 520.7 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "2bc24462-7c2d-4a1b-a86a-92dd7a14b9b4")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP37")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 233.68 331.47 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "3288716c-3823-4d04-ad66-1396af7cb286")
-		(property "Reference" "TP8"
-			(at 236.22 333.5019 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 236.22 336.0419 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 228.6 331.47 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 228.6 331.47 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 233.68 331.47 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "cad9dc6b-3071-413e-bc3d-0d4f794a737d")
-		)
-		(instances
-			(project "picofox"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP8")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:+3V3")
 		(at 212.09 181.61 0)
 		(unit 1)
@@ -19583,141 +16574,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "#PWR10")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 163.83 320.04 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "33d06c45-d425-4d50-b7a2-5997de9266a8")
-		(property "Reference" "TP2"
-			(at 166.37 315.4679 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 166.37 318.0079 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 168.91 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 168.91 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 163.83 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a3771fc5-2f7b-4470-b6eb-296af2ed995a")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 435.61 100.33 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "36346058-6026-4f9f-970c-906f37886ede")
-		(property "Reference" "TP14"
-			(at 433.578 101.854 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 431.038 101.854 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 435.61 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 435.61 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 435.61 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "309c4862-9d00-42db-9821-aa5384991db5")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP14")
 					(unit 1)
 				)
 			)
@@ -19880,73 +16736,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Mechanical:MountingHole_Pad")
-		(at 558.8 350.52 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "44be9ff0-e470-4132-bf5c-2233f8ecb822")
-		(property "Reference" "H1"
-			(at 562.61 349.2499 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "MountingHole"
-			(at 562.61 351.7899 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_Pad"
-			(at 558.8 350.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 558.8 350.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Mounting Hole with connection"
-			(at 558.8 350.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "3e8d5cb9-f039-4633-8bed-0bf016017ccf")
-		)
-		(instances
-			(project ""
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "H1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 39.37 87.63 0)
 		(unit 1)
@@ -20090,74 +16879,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 481.33 102.87 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "4873f056-c727-42ac-b7c9-e2adceeb31e4")
-		(property "Reference" "TP35"
-			(at 483.362 101.346 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 485.902 101.346 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 481.33 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 481.33 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 481.33 102.87 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a1967160-a59a-464c-9e56-4e42cb8f2e44")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP35")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C_Small")
 		(at 196.85 323.85 0)
 		(unit 1)
@@ -20231,74 +16952,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "C19")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 533.4 114.3 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "49a4aca9-0021-4638-8773-7fc975cf33e2")
-		(property "Reference" "TP53"
-			(at 534.924 116.332 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 534.924 118.872 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 528.32 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 528.32 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 533.4 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "7038e636-3aed-4e63-b117-19c5e6941553")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP53")
 					(unit 1)
 				)
 			)
@@ -20505,74 +17158,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "Y1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 435.61 115.57 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "4b6a8cb5-341a-4598-b7c5-f3c5836ceb9b")
-		(property "Reference" "TP23"
-			(at 433.578 117.094 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 431.038 117.094 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 435.61 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 435.61 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 435.61 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "0dc18fe9-463d-41c2-9eb0-893200364c59")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP23")
 					(unit 1)
 				)
 			)
@@ -20793,74 +17378,6 @@
 			(project "picofox_kicad"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "R40")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 435.61 105.41 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "542cec34-f81b-42f1-9ced-c3f1c133c8ac")
-		(property "Reference" "TP19"
-			(at 433.578 106.934 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 431.038 106.934 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 435.61 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 435.61 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 435.61 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "dda7db9a-4745-4239-bdb8-188aca6c63cc")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP19")
 					(unit 1)
 				)
 			)
@@ -21097,74 +17614,6 @@
 			(project "picofox_kicad"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "R36")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 435.61 110.49 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "579d6220-cf6e-4376-ad44-f0254693d09e")
-		(property "Reference" "TP21"
-			(at 433.578 112.014 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 431.038 112.014 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 435.61 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 435.61 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 435.61 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a8bb2c17-f8b7-43f6-8739-b69cd88a6a9a")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP21")
 					(unit 1)
 				)
 			)
@@ -21834,73 +18283,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Mechanical:MountingHole_Pad")
-		(at 558.8 355.6 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "63996d29-672b-4db6-a39e-fce357cded98")
-		(property "Reference" "H2"
-			(at 562.61 354.3299 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "MountingHole"
-			(at 562.61 356.8699 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_Pad"
-			(at 558.8 355.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 558.8 355.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Mounting Hole with connection"
-			(at 558.8 355.6 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "f6727cb4-7b5f-40f5-abe7-82cd63ce5cbf")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "H2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R")
 		(at 163.83 328.93 0)
 		(unit 1)
@@ -21974,74 +18356,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "R14")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 435.61 107.95 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "668a2c3e-998a-4389-9956-e4ad9c17672e")
-		(property "Reference" "TP20"
-			(at 433.578 109.474 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 431.038 109.474 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 435.61 102.87 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 435.61 102.87 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 435.61 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "dcbb94e3-4714-467a-b382-1f5f3e2b9f57")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP20")
 					(unit 1)
 				)
 			)
@@ -22420,139 +18734,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 342.9 146.05 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "748da493-a458-42c5-85c8-acfb4b141f56")
-		(property "Reference" "TP6"
-			(at 345.44 141.4779 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 345.44 144.0179 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 347.98 146.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 347.98 146.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 342.9 146.05 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "0423b203-a340-4181-a858-ffec89dd4f8f")
-		)
-		(instances
-			(project "picofox"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP6")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 328.93 320.04 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "759bdf68-d8d2-4480-9f7c-6ec46f3a8127")
-		(property "Reference" "TP9"
-			(at 321.056 328.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 321.056 331.47 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 323.85 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 323.85 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 328.93 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "69b64613-9b9e-4628-8574-c6ebc7cc4639")
-		)
-		(instances
-			(project "picofox"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP9")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "SniffyLib:ME6217C33M5G")
 		(at 100.33 209.55 0)
 		(unit 1)
@@ -22638,73 +18819,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 118.11 320.04 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "7781e097-a750-4c80-9d0d-ad8091955001")
-		(property "Reference" "TP7"
-			(at 120.65 315.4679 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 120.65 318.0079 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 123.19 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 123.19 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 118.11 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "f9bcbeef-7b26-455b-90d1-bec027408c44")
-		)
-		(instances
-			(project "picofox"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP7")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C_Small")
 		(at 379.73 323.85 0)
 		(unit 1)
@@ -22784,142 +18898,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 435.61 123.19 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "78fa34c0-31cd-4212-be34-60a9dbde287a")
-		(property "Reference" "TP24"
-			(at 433.578 124.714 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 431.038 124.714 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 435.61 118.11 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 435.61 118.11 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 435.61 123.19 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "efd88e0e-4175-4724-8b44-e2e38a9b4a9d")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP24")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 481.33 115.57 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "7a416776-fffa-4198-a0bb-d6d6bbbe28fb")
-		(property "Reference" "TP30"
-			(at 483.362 114.046 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 485.902 114.046 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 481.33 120.65 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 481.33 120.65 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 481.33 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "d33eb721-df81-45e2-9528-6c3942426e40")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP30")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 394.97 328.93 0)
 		(unit 1)
@@ -22980,74 +18958,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "#PWR35")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 535.94 111.76 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "8535f955-9db7-4605-b992-e3c869485461")
-		(property "Reference" "TP43"
-			(at 534.416 109.728 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 534.416 107.188 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 541.02 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 541.02 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 535.94 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "0119b4f9-41bf-4a69-82ae-d8ff02b036c4")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP43")
 					(unit 1)
 				)
 			)
@@ -23288,74 +19198,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 481.33 110.49 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "8cdc8918-c38e-4290-b04f-eced15be0e82")
-		(property "Reference" "TP32"
-			(at 483.362 108.966 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 485.902 108.966 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 481.33 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 481.33 115.57 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 481.33 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "b4fce985-f4c0-4fb1-9b25-f2f706f791a4")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP32")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 320.04 207.01 0)
 		(unit 1)
@@ -23486,141 +19328,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 435.61 102.87 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "902f978e-6d4b-48b6-bf84-bfcc1602260a")
-		(property "Reference" "TP17"
-			(at 433.578 104.394 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 431.038 104.394 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 435.61 97.79 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 435.61 97.79 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 435.61 102.87 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "646bedfc-78d8-4263-bc96-f204aa889349")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP17")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 314.96 140.97 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "93139997-7707-4c9e-9fd0-487f0b282045")
-		(property "Reference" "TP4"
-			(at 317.5 136.3979 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 317.5 138.9379 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 320.04 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 320.04 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 314.96 140.97 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "53bc3547-7382-4a57-b69a-4cd10f72bf3a")
-		)
-		(instances
-			(project ""
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:FerriteBead_Small")
 		(at 49.53 290.83 0)
 		(mirror y)
@@ -23701,74 +19408,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 435.61 118.11 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "95ab14fd-c669-47f4-9c00-d2570895c47a")
-		(property "Reference" "TP26"
-			(at 433.578 119.634 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 431.038 119.634 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 435.61 113.03 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 435.61 113.03 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 435.61 118.11 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "99e9d4df-b98b-407f-be17-076402dfc3aa")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP26")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R")
 		(at 43.18 199.39 270)
 		(mirror x)
@@ -23840,74 +19479,6 @@
 			(project "picofox_kicad"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "R7")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 481.33 113.03 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "9923d6e6-f95c-4e50-9a6c-736a87f7271e")
-		(property "Reference" "TP31"
-			(at 483.362 111.506 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 485.902 111.506 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 481.33 118.11 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 481.33 118.11 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 481.33 113.03 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "3aad833d-9bbb-4a35-b448-8e5b6d9d4e44")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP31")
 					(unit 1)
 				)
 			)
@@ -24134,274 +19705,6 @@
 			(project ""
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "Q1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector_Generic:Conn_02x10_Odd_Even")
-		(at 457.2 110.49 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "9d069dcd-92e1-4c7b-bb06-baf437d590df")
-		(property "Reference" "J3"
-			(at 458.47 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "Conn_02x10_Counter_Clockwise"
-			(at 458.47 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_2x10_P2.54mm_Vertical_SMD"
-			(at 457.2 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 457.2 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic connector, double row, 02x10, odd/even pin numbering scheme (row 1 odd numbers, row 2 even numbers), script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 457.2 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" "C3294468"
-			(at 457.2 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "6"
-			(uuid "38d8b669-7f8d-4703-9a1f-be0656c03a92")
-		)
-		(pin "19"
-			(uuid "b51166ac-ead0-479a-bf34-80c8a366d21b")
-		)
-		(pin "15"
-			(uuid "985686e4-6707-4ed4-bb1c-365da9bdae6c")
-		)
-		(pin "16"
-			(uuid "f77fe245-576a-4b49-90d5-9ddbe1a12b87")
-		)
-		(pin "12"
-			(uuid "6397098d-0d37-4b83-8ea2-659662760fed")
-		)
-		(pin "18"
-			(uuid "36f5b566-8939-42d4-b57e-4ecf48ba6a76")
-		)
-		(pin "11"
-			(uuid "56e56c07-abc4-477c-9f83-2ee3e96879bc")
-		)
-		(pin "5"
-			(uuid "e32b917a-c5ab-4d11-825e-1cab86b53e2d")
-		)
-		(pin "20"
-			(uuid "9beb0df0-0e8f-47d0-bfa9-56d84cc824c7")
-		)
-		(pin "1"
-			(uuid "d76057e8-55ff-485c-b1f2-694ac1b838aa")
-		)
-		(pin "9"
-			(uuid "cc984cff-b277-4453-a307-d77840142d91")
-		)
-		(pin "10"
-			(uuid "d7deb5c0-1dde-4192-a5ef-4fdc97e03def")
-		)
-		(pin "3"
-			(uuid "f4d9d4cc-9a33-4dce-9ada-364d101cb7e5")
-		)
-		(pin "14"
-			(uuid "dc2b1454-6fc7-46d4-942a-5fcbde2367c3")
-		)
-		(pin "13"
-			(uuid "831ce6e8-35fb-4557-be17-94b51e3d1672")
-		)
-		(pin "2"
-			(uuid "c0503282-0e63-4561-b75f-7ff0b20cbe3a")
-		)
-		(pin "17"
-			(uuid "385cec26-988c-4243-b82a-81b23a3f2c21")
-		)
-		(pin "8"
-			(uuid "944c4471-1e81-43cd-80e9-b053811c10f7")
-		)
-		(pin "7"
-			(uuid "f6507be8-e777-4e22-aa3b-e0205742cf3a")
-		)
-		(pin "4"
-			(uuid "c9ca2785-b7a1-4e62-8b3c-b93e4642af44")
-		)
-		(instances
-			(project ""
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "J3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 525.78 111.76 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "9faea9f9-1bff-4384-ad38-3f29ac35274b")
-		(property "Reference" "TP39"
-			(at 524.256 109.728 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 524.256 107.188 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 530.86 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 530.86 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 525.78 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "7a17d581-d2d9-48f4-80d8-e9507b10c994")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP39")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 481.33 118.11 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "9ffd7e22-4559-4600-a7a5-6f074115bb06")
-		(property "Reference" "TP29"
-			(at 483.362 116.586 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 485.902 116.586 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 481.33 123.19 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 481.33 123.19 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 481.33 118.11 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "08c4cdbc-8e44-4a3e-bcb1-9397200ea46f")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP29")
 					(unit 1)
 				)
 			)
@@ -24675,142 +19978,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 533.4 111.76 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "a4e5c115-bb69-4303-ba1e-b12c2123cdac")
-		(property "Reference" "TP42"
-			(at 531.876 109.728 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 531.876 107.188 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 538.48 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 538.48 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 533.4 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "ce11378a-a2d2-4d7a-bb06-e94e8edfbb6e")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP42")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 520.7 114.3 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "a52da06a-d4f4-442c-a9f5-ca2b966f0f21")
-		(property "Reference" "TP49"
-			(at 522.224 116.332 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 522.224 118.872 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 515.62 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 515.62 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 520.7 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "067f710a-c5a2-4f29-9a91-e6a9b7157e8d")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP49")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:C_Small")
 		(at 400.05 323.85 0)
 		(unit 1)
@@ -24961,74 +20128,6 @@
 			(project "picofox_kicad"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "R12")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 535.94 114.3 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "a8f90a9a-449f-4b69-865f-6ef37a839a60")
-		(property "Reference" "TP48"
-			(at 537.464 116.332 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 537.464 118.872 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 530.86 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 530.86 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 535.94 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "1c7ce074-3a27-484a-9074-46361fc07f7a")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP48")
 					(unit 1)
 				)
 			)
@@ -25421,71 +20520,6 @@
 		)
 	)
 	(symbol
-		(lib_id "power:+3V3")
-		(at 450.85 99.06 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "adaeb8fb-9ddd-4392-acce-078c42f2e615")
-		(property "Reference" "#PWR28"
-			(at 450.85 102.87 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3V3"
-			(at 451.231 94.6658 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 450.85 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 450.85 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 450.85 99.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "6f77ce44-8e55-44f2-b43c-db565b573ba5")
-		)
-		(instances
-			(project "picofox"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "#PWR28")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 82.55 340.36 0)
 		(unit 1)
@@ -25546,74 +20580,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "#PWR24")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 481.33 120.65 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "adfa9042-088b-48a5-bb48-6845c77bb80d")
-		(property "Reference" "TP28"
-			(at 483.362 119.126 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 485.902 119.126 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 481.33 125.73 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 481.33 125.73 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 481.33 120.65 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "4bf0dcfe-9f44-4bfc-808b-e4b0f9011b65")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP28")
 					(unit 1)
 				)
 			)
@@ -25685,74 +20651,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 530.86 111.76 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "aff69df5-b628-4453-96e9-12d49c342874")
-		(property "Reference" "TP41"
-			(at 529.336 109.728 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 529.336 107.188 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 535.94 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 535.94 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 530.86 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "aca6a171-8af2-4e23-b1ff-855c2e9e8846")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP41")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 157.48 336.55 0)
 		(unit 1)
@@ -25813,72 +20711,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "#PWR30")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 308.61 341.63 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "b208a943-372e-4571-96b2-75dcb9f67443")
-		(property "Reference" "TP1"
-			(at 317.5 349.504 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 320.04 349.504 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 308.61 346.71 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 308.61 346.71 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 308.61 341.63 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "dafaa7c1-bbdb-45c1-abbc-6b8be13367b1")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP1")
 					(unit 1)
 				)
 			)
@@ -26087,74 +20919,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "#PWR29")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 528.32 114.3 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "b7caa74d-153e-444b-817b-7fbae052de70")
-		(property "Reference" "TP45"
-			(at 529.844 116.332 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 529.844 118.872 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 523.24 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 523.24 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 528.32 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "6512b59d-b1f2-4c17-93e2-9131b7d43312")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP45")
 					(unit 1)
 				)
 			)
@@ -26629,74 +21393,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Jumper:SolderJumper_2_Open")
-		(at 453.39 320.04 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "c158b63d-a182-45e9-a689-ea6d37811762")
-		(property "Reference" "JP2"
-			(at 453.39 317.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "SolderJumper_2_Open"
-			(at 453.39 316.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm"
-			(at 453.39 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 453.39 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Solder Jumper, 2-pole, open"
-			(at 453.39 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "e25782c8-b92b-4513-aa4c-34d2aa9d4d2f")
-		)
-		(pin "1"
-			(uuid "e3ce3489-60e7-41ea-b552-493ad3ff3dbd")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "JP2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "SniffyLib:Side View LED")
 		(at 138.43 201.93 90)
 		(unit 1)
@@ -26935,74 +21631,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 523.24 111.76 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "c63167fd-9bd8-40bc-907a-e5512da19efe")
-		(property "Reference" "TP38"
-			(at 521.716 109.728 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 521.716 107.188 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 528.32 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 528.32 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 523.24 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "dbc8e93e-17f9-474c-8be5-d8871d9fe58c")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP38")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "picofox:BVA1761")
 		(at 288.29 322.58 0)
 		(unit 1)
@@ -27219,73 +21847,6 @@
 			(project "picofox_kicad"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "C29")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Mechanical:MountingHole_Pad")
-		(at 558.8 365.76 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "cb4f2173-050e-44ad-a248-9e9b3ea82567")
-		(property "Reference" "H4"
-			(at 562.61 364.4899 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "MountingHole"
-			(at 562.61 367.0299 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_Pad"
-			(at 558.8 365.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 558.8 365.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Mounting Hole with connection"
-			(at 558.8 365.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "0db9c88d-8ce1-4a41-938d-23f438b4b4ee")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "H4")
 					(unit 1)
 				)
 			)
@@ -27514,74 +22075,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Jumper:SolderJumper_2_Open")
-		(at 439.42 320.04 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "d4467788-484e-458f-9f67-168b36605701")
-		(property "Reference" "JP1"
-			(at 439.42 317.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "SolderJumper_2_Open"
-			(at 439.42 316.23 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "Jumper:SolderJumper-2_P1.3mm_Open_RoundedPad1.0x1.5mm"
-			(at 439.42 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 439.42 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Solder Jumper, 2-pole, open"
-			(at 439.42 320.04 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "ead6c4e9-0f78-4d8b-9913-db3ff6290853")
-		)
-		(pin "1"
-			(uuid "c14a1658-5899-4f2e-a944-7ba311904c32")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "JP1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:R")
 		(at 151.13 328.93 0)
 		(unit 1)
@@ -27739,36 +22232,35 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 481.33 100.33 270)
+		(lib_id "Mechanical:MountingHole")
+		(at 553.72 283.21 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "d9065dc6-333a-4f7c-99a4-7ea429098682")
-		(property "Reference" "TP36"
-			(at 483.362 98.806 0)
+		(fields_autoplaced yes)
+		(uuid "dee00dc4-74e0-4950-9f9e-c7b78dbb69ae")
+		(property "Reference" "H1"
+			(at 556.26 281.9399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
-				(hide yes)
+				(justify left)
 			)
 		)
-		(property "Value" "TestPoint"
-			(at 485.902 98.806 0)
+		(property "Value" "Lanyard Hole"
+			(at 556.26 284.4799 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
-				(hide yes)
+				(justify left)
 			)
 		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 481.33 105.41 0)
+		(property "Footprint" "MountingHole:MountingHole_4.3mm_M4_DIN965"
+			(at 553.72 283.21 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -27777,7 +22269,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 481.33 105.41 0)
+			(at 553.72 283.21 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -27785,154 +22277,19 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "test point"
-			(at 481.33 100.33 0)
+		(property "Description" "Mounting Hole without connection"
+			(at 553.72 283.21 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(hide yes)
 			)
-		)
-		(pin "1"
-			(uuid "1ebdf9e5-6264-4af4-a637-1ad00923ae20")
 		)
 		(instances
-			(project "picofox_kicad"
+			(project ""
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP36")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:VBUS")
-		(at 473.71 96.52 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "dab8ac6f-45b3-42a3-8d71-16215e6ccb12")
-		(property "Reference" "#PWR041"
-			(at 473.71 100.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "VBUS"
-			(at 474.091 92.1258 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 473.71 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 473.71 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" ""
-			(at 473.71 96.52 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "30079603-4639-4da2-af55-9469438ad972")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "#PWR041")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 435.61 113.03 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "ddd64cda-924b-4084-9258-cbe720a7b9f4")
-		(property "Reference" "TP22"
-			(at 433.578 114.554 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 431.038 114.554 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 435.61 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 435.61 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 435.61 113.03 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "293ff2f9-9332-4c58-8d5b-a4fc0b4394bf")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP22")
+					(reference "H1")
 					(unit 1)
 				)
 			)
@@ -28010,74 +22367,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "L1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 525.78 114.3 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "dfc0ff50-ff6c-48d5-8826-3dea608afefd")
-		(property "Reference" "TP51"
-			(at 527.304 116.332 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 527.304 118.872 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 520.7 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 520.7 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 525.78 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "12b88bcd-3547-41ac-9fbc-2c3b88655ad5")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP51")
 					(unit 1)
 				)
 			)
@@ -28239,87 +22528,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:Conn_01x03_Pin")
-		(at 486.41 111.76 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "e1f17cca-d78e-4f1f-a008-0933002b025e")
-		(property "Reference" "J2"
-			(at 487.045 104.14 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "Conn_01x03_Pin"
-			(at 487.045 106.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "Connector_JST:JST_SH_SM03B-SRSS-TB_1x03-1MP_P1.00mm_Horizontal"
-			(at 486.41 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 486.41 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic connector, single row, 01x03, script generated"
-			(at 486.41 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "LCSC" "C160403"
-			(at 486.41 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "f3f7c63b-f13f-471a-b071-2350ad6112c4")
-		)
-		(pin "3"
-			(uuid "7c75271a-a3a4-4688-8305-178a2b14c470")
-		)
-		(pin "1"
-			(uuid "890ca208-fad1-4954-89e1-d54c5685bf2c")
-		)
-		(instances
-			(project ""
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "J2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 433.07 236.22 0)
 		(unit 1)
@@ -28379,74 +22587,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "#PWR6")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 538.48 114.3 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "e28b8b3d-648a-49dd-bf85-29d3a37b1a63")
-		(property "Reference" "TP47"
-			(at 540.004 116.332 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 540.004 118.872 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 533.4 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 533.4 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 538.48 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "b1acc18b-423f-4359-a0d3-f5a8b449bdef")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP47")
 					(unit 1)
 				)
 			)
@@ -28669,17 +22809,35 @@
 		)
 	)
 	(symbol
-		(lib_id "power:GND")
-		(at 496.57 111.76 90)
-		(mirror x)
+		(lib_id "Mechanical:MountingHole")
+		(at 553.72 289.56 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
-		(uuid "e6a4e0b1-ad4b-49d7-b700-f2fdeefd45ef")
-		(property "Reference" "#PWR38"
-			(at 502.92 111.76 0)
+		(fields_autoplaced yes)
+		(uuid "e7bb550c-3e1f-480e-aab0-e3dcb075592b")
+		(property "Reference" "H2"
+			(at 556.26 288.2899 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "Lanyard Hole"
+			(at 556.26 290.8299 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "MountingHole:MountingHole_4.3mm_M4_DIN965"
+			(at 553.72 289.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -28687,16 +22845,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
-			(at 500.9642 111.887 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 496.57 111.76 0)
+		(property "Datasheet" "~"
+			(at 553.72 289.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -28704,31 +22854,19 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" ""
-			(at 496.57 111.76 0)
+		(property "Description" "Mounting Hole without connection"
+			(at 553.72 289.56 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(hide yes)
 			)
-		)
-		(property "Description" ""
-			(at 496.57 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "dfeda648-d01a-48ec-8677-2f048d30816c")
 		)
 		(instances
-			(project "picofox"
+			(project "PicoFox-PCB"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "#PWR38")
+					(reference "H2")
 					(unit 1)
 				)
 			)
@@ -28799,141 +22937,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Mechanical:MountingHole_Pad")
-		(at 558.8 360.68 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "e94f6af2-4de5-47b3-9472-673da96d29fa")
-		(property "Reference" "H3"
-			(at 562.61 359.4099 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "MountingHole"
-			(at 562.61 361.9499 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "MountingHole:MountingHole_2.7mm_M2.5_Pad"
-			(at 558.8 360.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 558.8 360.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Mounting Hole with connection"
-			(at 558.8 360.68 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "9ae2576e-5cdc-4e34-bdb5-ab49c0d7a5ee")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "H3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 481.33 105.41 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "e96223d3-8da8-4c0f-9d4f-59100f11dd03")
-		(property "Reference" "TP34"
-			(at 483.362 103.886 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 485.902 103.886 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 481.33 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 481.33 110.49 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 481.33 105.41 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "8d1eaf49-e2f6-4128-a786-222f3b4868bb")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP34")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 461.01 227.33 0)
 		(unit 1)
@@ -28993,141 +22996,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "#PWR27")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 481.33 107.95 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "ef11c4fc-fac3-4d80-9779-dc5ee5d5a66b")
-		(property "Reference" "TP33"
-			(at 483.362 106.426 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 485.902 106.426 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 481.33 113.03 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 481.33 113.03 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 481.33 107.95 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "684405ad-e7f2-4e13-8511-81a6e031cc4c")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP33")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 247.65 90.17 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "f0215882-af36-4023-a078-dd7ed05571c6")
-		(property "Reference" "TP3"
-			(at 252.73 88.8999 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 252.73 91.4399 90)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "TestPoint:TestPoint_Pad_D1.0mm"
-			(at 247.65 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 247.65 95.25 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 247.65 90.17 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a9449ff8-3027-4dd4-84ff-f51cca059756")
-		)
-		(instances
-			(project ""
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP3")
 					(unit 1)
 				)
 			)
@@ -29504,74 +23372,6 @@
 			(project "picofox"
 				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
 					(reference "C2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 538.48 111.76 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board yes)
-		(dnp no)
-		(uuid "fcac55d5-7fb5-4269-ae03-91bc20d45ac7")
-		(property "Reference" "TP44"
-			(at 536.956 109.728 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Value" "TestPoint"
-			(at 536.956 107.188 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-				(hide yes)
-			)
-		)
-		(property "Footprint" "PicofoxLib:Castellation Pad"
-			(at 543.56 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 543.56 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "test point"
-			(at 538.48 111.76 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "27146418-8c72-4d25-9f4c-54ca6562f810")
-		)
-		(instances
-			(project "picofox_kicad"
-				(path "/8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
-					(reference "TP44")
 					(unit 1)
 				)
 			)

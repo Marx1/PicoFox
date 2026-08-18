@@ -1,6 +1,6 @@
 /* PicoFox Audio Binary */
 
-#define DEFAULT_AUDIO_LOOPS 6
+#define DEFAULT_AUDIO_LOOPS 3
 
 // Heading for generated audio.
 const uint8_t wavHeader[] {
