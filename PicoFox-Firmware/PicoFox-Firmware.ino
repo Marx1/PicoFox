@@ -1,5 +1,5 @@
 /*
-  PicoFox - Production cleanup v35
+  PicoFox - random attenuation debug cleanup v51
   Based on PicoFox firmware by Giorgi Enterprises LLC dba AI6YM.radio.
   Original project:
   https://github.com/Marx1/PicoFox
@@ -23,14 +23,8 @@
 
   Stage 4:
     - Add Robot 36 VIS/header and scan timing.
-    - Add a built-in 256x240 monochrome diagnostic pattern.
-    - SSTV modulation is intentionally held at 5 kHz for timing stability.
     - Measure Si5351 update duration, missed sample deadlines, and real frame time.
-    - When SSTV_ENABLE=1, one Robot 36 diagnostic image is sent once at boot,
-      then the normal PicoFox audio/Morse loop starts.
     - RF output remains disabled for 5 seconds after boot before any transmit.
-    - JPEG decoding, alternating NORMAL/SSTV scheduling, and file cycling are
-      intentionally NOT implemented yet.
 
   Arduino environment:
     - Earle Philhower RP2040 core
@@ -38,9 +32,18 @@
     - Adafruit SPIFlash
     - Adafruit TinyUSB
     - SdFat - Adafruit Fork
-
-  No JPEG library is required for stages 1-4.
 */
+
+/*
+  RTTTL support in this firmware was inspired by and adapted from ideas in
+  EvilMog's midijunk project:
+
+  https://github.com/evilmog/evilmog/tree/master/midijunk
+
+  Credit: EvilMog
+*/
+
+
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -51,7 +54,6 @@
 #include "Adafruit_TinyUSB.h"
 #include <JPEGDEC.h>
 
-#include "audio.h"
 
 // #define DEBUG 1
 
@@ -71,8 +73,16 @@
 #define AMP_EN 2u
 #define ATTN_LE 4u
 
-#define AUDIO_SAMPLE_RATE_HZ 5000
+#define AUDIO_SAMPLE_RATE_HZ 8000UL
 #define AUDIO_FM_DEVIATION_HZ 5000
+#define AUDIO_SAMPLE_PERIOD_US (1000000UL / AUDIO_SAMPLE_RATE_HZ)
+
+// RF sequencing delays.
+// Allow the transmitter/amplifier to settle before modulation begins.
+#define TX_KEYUP_DELAY_MS 100UL
+
+// Silent keyed-carrier gap between WAV/RTTTL audio and the live Morse ID.
+#define AUDIO_TO_MORSE_GAP_MS 1000UL
 #define SSTV_FM_DEVIATION_HZ 3000
 
 #define SI5351_PLL SI5351_PLLA
@@ -83,7 +93,6 @@
 #define SI5351_DRIVE_LEVEL_R2 SI5351_DRIVE_2MA
 #define SI5351_DRIVE_LEVEL_R3 SI5351_DRIVE_2MA
 
-#define SAMPLE_WRITE_CORR_US -3
 #define TEST_MODE_PIN 14u
 
 #define MIN_FREQ_MHZ 144
@@ -94,7 +103,7 @@
 // SSTV stage 1-4 constants
 // -----------------------------------------------------------------------------
 
-// SSTV uses a higher modulation update rate than the legacy WAV/Morse path.
+// SSTV and normal audio now both use an 8 kHz modulation update rate.
 // 10 kHz gives ~4.35 samples/cycle at the 2300 Hz video upper limit while
 // NOTE: if the Si5351/I2C update cannot complete inside 100 us, decoded timing
 // will run long. DEBUG timing can be added later to measure that directly.
@@ -113,13 +122,20 @@
 // output, JPEG decoding, RGB conversion, floating-point work, and other
 // variable-latency operations outside the real-time transmit loop.
 #define SSTV_PLL_TABLE_LEVELS 512
+#define AUDIO_PLL_TABLE_LEVELS 512
 #define SI5351_I2C_ADDRESS 0x60
 #define SI5351_PLLA_PARAMETERS_REG 26
 #define SI5351_RFRAC_DENOM 1000000ULL
 #define SI5351_REF_FREQ_X100 2500000000ULL
 
 #define SSTV_MODE_ROBOT36 36
-#define PICOFOX_FIRMWARE_VERSION "v35"
+#define PICOFOX_FIRMWARE_VERSION "v51"
+#define AUDIO_MODE_WAV 0
+#define AUDIO_MODE_RTTTL 1
+
+#define ATTENUATION_MODE_FIXED 0
+#define ATTENUATION_MODE_RANDOM 1
+#define DEFAULT_AUDIO_MODE AUDIO_MODE_WAV
 #define DEFAULT_VOICE_ENABLE true
 #define DEFAULT_SSTV_ENABLE false
 #define DEFAULT_SSTV_MODE SSTV_MODE_ROBOT36
@@ -171,14 +187,13 @@ volatile bool filesystemBusy = false;  // Prevent USB MSC writes racing active S
 
 const char SETTINGS_TXT[] = "settings.txt";
 const char AUDIO_WAV[] = "audio.wav";
-const char CALLSIGN_WAV[] = ".callsign.wav";
-const char SETTINGS_CRC[] = ".settings_crc.bin";
 
 const char SSTV_JPEG_FILE[] = "sstv.jpg";
 const char SSTV_JPEG_PREFIX[] = "sstv";
 const char SSTV_JPEG_EXT[] = ".jpg";
 const char AUDIO_SEQUENCE_PREFIX[] = "audio";
 const char AUDIO_SEQUENCE_EXT[] = ".wav";
+const char SONGS_TXT[] = "songs.txt";
 #define FILE_SEQUENCE_MAX 999U
 
 #define SSTV_IMAGE_WIDTH 320
@@ -202,12 +217,19 @@ const uint8_t DEFAULT_ITU_ZONE = 2;
 const double DEFAULT_FREQ_MHZ = 146.565;
 const uint8_t DEFAULT_DUTY_CYCLE = 100;
 const uint8_t DEFAULT_WPM = 15;
-const uint8_t DEFAULT_FARNSWORTH_WPM = 10;
 const uint16_t DEFAULT_MORSE_TONE_HZ = 600;
 const uint8_t DEFAULT_TONE_AMPLITUDE_PERCENT = 70;
 const uint8_t DEFAULT_ATTENUATION = 0;
+const uint8_t DEFAULT_ATTENUATION_MODE = ATTENUATION_MODE_FIXED;
+const uint8_t DEFAULT_ATTENUATION_MIN = 0;
+const uint8_t DEFAULT_ATTENUATION_MAX = 127;
 
-const uint8_t ATTENUATION_CYCLE_OFFSETS[] = {0, 40, 20};
+// Built-in fallback tune. Replaces the old embedded PCM audio.h waveform.
+const char DEFAULT_RTTTL[] =
+  "PicoFox:d=4,o=4,b=150:"
+  "g,b,g,b,g,b,g,b,g,b,g,b,"
+  "g,b,g,b,g,b,g,b,g,b,g,b,"
+  "g,b,g,b,g,b,g,b,g,b,g,b";
 
 const int32_t CARRIER_OFFSET_SEQUENCE_HZ[] = {
   0, 1000, 3000, 5000, 3000, 1000,
@@ -230,6 +252,10 @@ struct SstvPllEntry {
   uint8_t reg[8];
 };
 
+struct AudioPllEntry {
+  uint8_t reg[8];
+};
+
 struct SstvRgb {
   uint8_t r;
   uint8_t g;
@@ -242,15 +268,20 @@ struct Settings {
   double transmitFreqMHz;
   uint8_t dutyCyclePercent;
   uint8_t morseWPM;
-  uint8_t farnsworthWPM;
   uint16_t morseToneHz;
   uint8_t toneAmplitudePercent;
   bool isConfigured;
+
+  // Attenuator configuration. Values are limited to 0..127.
   uint8_t attenuation;
+  uint8_t attenuationMode;
+  uint8_t attenuationMin;
+  uint8_t attenuationMax;
 
   // Normal audio.wav + Morse callsign transmission.
   // Set VOICE_ENABLE=0 for SSTV-only operation.
   bool voiceEnabled;
+  uint8_t audioMode;
 
   // SSTV configuration.
   bool sstvEnabled;
@@ -263,17 +294,19 @@ Settings settings = {
   .transmitFreqMHz = DEFAULT_FREQ_MHZ,
   .dutyCyclePercent = DEFAULT_DUTY_CYCLE,
   .morseWPM = DEFAULT_WPM,
-  .farnsworthWPM = DEFAULT_FARNSWORTH_WPM,
   .morseToneHz = DEFAULT_MORSE_TONE_HZ,
   .toneAmplitudePercent = DEFAULT_TONE_AMPLITUDE_PERCENT,
   .isConfigured = false,
   .attenuation = DEFAULT_ATTENUATION,
+  .attenuationMode = DEFAULT_ATTENUATION_MODE,
+  .attenuationMin = DEFAULT_ATTENUATION_MIN,
+  .attenuationMax = DEFAULT_ATTENUATION_MAX,
   .voiceEnabled = DEFAULT_VOICE_ENABLE,
+  .audioMode = DEFAULT_AUDIO_MODE,
   .sstvEnabled = DEFAULT_SSTV_ENABLE,
   .sstvMode = DEFAULT_SSTV_MODE
 };
 
-int settingsCrc = 0;
 
 // DDS phase. Keeping phase continuous across SSTV frequency changes avoids
 // unnecessary discontinuities at pixel/timing boundaries.
@@ -296,17 +329,39 @@ uint16_t sstvSinePllIndex[256];
 uint32_t sstvTonePhaseIncrement[256];
 uint32_t sstvPhase32 = 0;
 
+// Separate 8 kHz normal-audio modulation state. This deliberately does not
+// share the SSTV lookup tables, preserving the known-good SSTV core.
+AudioPllEntry audioPllTable[AUDIO_PLL_TABLE_LEVELS];
+uint16_t audioSinePllIndex[256];
+uint32_t audioPhase32 = 0;
+int32_t audioPllCarrierOffsetHz = 0;
+uint32_t audioPllWriteErrors = 0;
+
+// State used only by RANDOM attenuation mode.
+uint8_t lastRandomAttenuation = 0xFF;
+uint32_t attenuationRandomState = 0x6D2B79F5UL;
+
 // -----------------------------------------------------------------------------
 // Forward declarations
 // -----------------------------------------------------------------------------
 
 void formatFat16();
 void saveDefaultSettings();
-void saveDefaultAudio();
+void ensureSettingsComments();
 void setSi5351Output(bool enabled);
 void setFrequencyOffset(double deviation);
 void programAttenuator(uint8_t attenuation);
+uint32_t nextAttenuationRandom();
+uint8_t selectAttenuationForTransmit();
 uint32_t playAudio(const char* filename, int32_t carrierOffsetHz);
+uint32_t playRtttl(const char* rtttl, int32_t carrierOffsetHz);
+uint32_t sendMorseCallsign(int32_t carrierOffsetHz);
+bool buildAudioPllTable(int32_t carrierOffsetHz);
+bool writeAudioPllEntry(uint16_t index);
+void buildAudioSineTable(uint8_t amplitudePercent);
+uint32_t audioPhaseIncrementForTone(uint16_t toneHz);
+uint32_t sendAudioTone(uint16_t toneHz, uint32_t durationUs, uint8_t amplitudePercent);
+void sendAudioSilence(uint32_t durationUs);
 void audioTask();
 
 // SSTV stages 3-4.
@@ -315,17 +370,20 @@ void sendRobot36VIS(int32_t carrierOffsetHz);
 void sendRobot36Jpeg(const char* filename, int32_t carrierOffsetHz);
 uint16_t getSstvPixelSafe(uint16_t x, uint16_t line);
 bool flashFileExists(const char* filename);
+void ensureSongsFilePresent();
+bool getNextRtttlSong(uint16_t* songIndex, String* outSong);
+bool readFatFileLine(FatFile* f, String* outLine);
 bool nextSequencedFile(const char* prefix,
                        const char* extension,
                        uint16_t* index,
                        char* outName,
                        size_t outNameSize);
 uint32_t playNextNormalTransmission(uint8_t* carrierSequenceStep,
-                                    uint16_t* audioSequenceIndex);
+                                    uint16_t* audioSequenceIndex,
+                                    uint16_t* songSequenceIndex);
 uint32_t sendNextSstvTransmission(uint8_t* carrierSequenceStep,
                                   uint16_t* sstvSequenceIndex);
-void applyDutyCycleOff(uint32_t activeLengthMs,
-                       uint8_t* attenuationCycleStep);
+void applyDutyCycleOff(uint32_t activeLengthMs);
 bool loadRobot36Jpeg(const char* filename);
 void* jpegOpenCallback(const char* filename, int32_t* fileSize);
 void jpegCloseCallback(void* handle);
@@ -404,30 +462,72 @@ void closeRoot() {
 }
 
 void saveDefaultSettings() {
-  char buffer[768];
+  char buffer[3072];
 
   snprintf(
     buffer,
     sizeof(buffer),
+    "# Alphanumeric callsign, maximum 12 characters.\n"
     "CALLSIGN=%s\n"
+    "\n"
+    "# ITU zone where the transmitter operates. Valid values: 1, 2, or 3.\n"
     "ITU_ZONE=%u\n"
+    "\n"
+    "# Transmit frequency in MHz.\n"
     "FREQ_MHZ=%.6f\n"
+    "\n"
+    "# Transmit duty cycle percentage, valid range 0 to 100.\n"
+    "# If SSTV mode is enabled, this must be less than 80.\n"
     "DUTY_CYCLE=%u\n"
+    "\n"
+    "# Attenuation mode: FIXED uses the ATTENUATION setting; RANDOM selects a random value each TX.\n"
+    "ATTENUATION_MODE=FIXED\n"
+    "\n"
+    "# ATTENUATION setting used when ATTENUATION_MODE=FIXED. Valid range: 0 to 127, approximately 0.25 dB per step.\n"
     "ATTENUATION=%u\n"
+    "\n"
+    "# ATTENUATION_MIN is the lowest value used in RANDOM mode. Valid range: 0 to 127, approximately 0.25 dB per step.\n"
+    "# ATTENUATION_MIN must be less than ATTENUATION_MAX.\n"
+    "ATTENUATION_MIN=%u\n"
+    "\n"
+    "# ATTENUATION_MAX is the highest value used in RANDOM mode. Valid range: 0 to 127, approximately 0.25 dB per step.\n"
+    "# ATTENUATION_MAX must be greater than ATTENUATION_MIN.\n"
+    "ATTENUATION_MAX=%u\n"
+    "\n"
+    "# Morse ID speed in words per minute.\n"
     "MORSE_WPM=%u\n"
-    "MORSE_FARNSWORTH_WPM=%u\n"
+    "\n"
+    "# Morse tone frequency in Hz. Valid range: 100 to 2000 Hz.\n"
     "MORSE_TONE=%u\n"
+    "\n"
+    "# Morse tone volume percentage. Valid range: 1 to 100.\n"
     "MORSE_TONE_VOL=%u\n"
+    "\n"
+    "# Enables the Voice/Audio file and Morse code mode. 1=enabled, 0=disabled.\n"
     "VOICE_ENABLE=%u\n"
+    "\n"
+    "# Selects the normal audio source. Valid values: WAV or RTTTL.\n"
+    "# WAV uses audio.wav, audio1.wav, audio2.wav, etc.\n"
+    "# RTTTL uses one song per line from songs.txt and rotates through the list.\n"
+    "# RTTTL format and example songs:\n"
+    "# https://1j01.github.io/rtttl.js/\n"
+    "# https://github.com/neverfa11ing/FlipperMusicRTTTL\n"
+    "AUDIO_MODE=WAV\n"
+    "\n"
+    "# Enables SSTV mode. 1=enabled, 0=disabled.\n"
+    "# You MUST set DUTY_CYCLE to less than 80 for SSTV mode to work correctly.\n"
     "SSTV_ENABLE=%u\n"
+    "\n"
+    "# SSTV encoding mode. Currently ONLY ROBOT36 is supported.\n"
     "SSTV_MODE=ROBOT36\n",
     DEFAULT_CALLSIGN,
     DEFAULT_ITU_ZONE,
     DEFAULT_FREQ_MHZ,
     DEFAULT_DUTY_CYCLE,
     DEFAULT_ATTENUATION,
+    DEFAULT_ATTENUATION_MIN,
+    DEFAULT_ATTENUATION_MAX,
     DEFAULT_WPM,
-    DEFAULT_FARNSWORTH_WPM,
     DEFAULT_MORSE_TONE_HZ,
     DEFAULT_TONE_AMPLITUDE_PERCENT,
     DEFAULT_VOICE_ENABLE ? 1 : 0,
@@ -443,21 +543,6 @@ void saveDefaultSettings() {
   file.close();
 }
 
-void saveDefaultAudio() {
-  if (!file.open(&root, AUDIO_WAV, O_RDWR | O_CREAT | O_TRUNC)) {
-    Serial.println("Failed to create default audio.wav");
-    return;
-  }
-
-  file.write(wavHeader, sizeof(wavHeader));
-
-  for (int i = 0; i < DEFAULT_AUDIO_LOOPS; i++) {
-    file.write(defaultAudio, sizeof(defaultAudio));
-  }
-
-  file.close();
-}
-
 void ensureSstvSettingsPresent() {
   if (!openRoot()) {
     return;
@@ -469,6 +554,10 @@ void ensureSstvSettingsPresent() {
   }
 
   bool haveVoiceEnable = false;
+  bool haveAudioMode = false;
+  bool haveAttenuationMode = false;
+  bool haveAttenuationMin = false;
+  bool haveAttenuationMax = false;
   bool haveEnable = false;
   bool haveMode = false;
   String line = "";
@@ -488,6 +577,14 @@ void ensureSstvSettingsPresent() {
 
       if (check.startsWith("VOICE_ENABLE=")) {
         haveVoiceEnable = true;
+      } else if (check.startsWith("AUDIO_MODE=")) {
+        haveAudioMode = true;
+      } else if (check.startsWith("ATTENUATION_MODE=")) {
+        haveAttenuationMode = true;
+      } else if (check.startsWith("ATTENUATION_MIN=")) {
+        haveAttenuationMin = true;
+      } else if (check.startsWith("ATTENUATION_MAX=")) {
+        haveAttenuationMax = true;
       } else if (check.startsWith("SSTV_ENABLE=")) {
         haveEnable = true;
       } else if (check.startsWith("SSTV_MODE=")) {
@@ -507,6 +604,14 @@ void ensureSstvSettingsPresent() {
 
     if (check.startsWith("VOICE_ENABLE=")) {
       haveVoiceEnable = true;
+    } else if (check.startsWith("AUDIO_MODE=")) {
+      haveAudioMode = true;
+    } else if (check.startsWith("ATTENUATION_MODE=")) {
+      haveAttenuationMode = true;
+    } else if (check.startsWith("ATTENUATION_MIN=")) {
+      haveAttenuationMin = true;
+    } else if (check.startsWith("ATTENUATION_MAX=")) {
+      haveAttenuationMax = true;
     } else if (check.startsWith("SSTV_ENABLE=")) {
       haveEnable = true;
     } else if (check.startsWith("SSTV_MODE=")) {
@@ -516,7 +621,7 @@ void ensureSstvSettingsPresent() {
 
   file.close();
 
-  if (!haveVoiceEnable || !haveEnable || !haveMode) {
+  if (!haveVoiceEnable || !haveAudioMode || !haveAttenuationMode || !haveAttenuationMin || !haveAttenuationMax || !haveEnable || !haveMode) {
     if (file.open(&root, SETTINGS_TXT, O_RDWR | O_AT_END)) {
       // Ensure appended keys begin on a fresh line even if the old file did
       // not end with a newline.
@@ -525,6 +630,31 @@ void ensureSstvSettingsPresent() {
       if (!haveVoiceEnable) {
         const char voiceLine[] = "VOICE_ENABLE=1\n";
         file.write(voiceLine, sizeof(voiceLine) - 1);
+      }
+      if (!haveAudioMode) {
+        const char audioModeLine[] =
+          "# Normal audio source: WAV uses audio.wav/audio1.wav/...; RTTTL uses songs.txt.\n"
+          "AUDIO_MODE=WAV\n";
+        file.write(audioModeLine, sizeof(audioModeLine) - 1);
+      }
+
+      if (!haveAttenuationMode) {
+        const char modeLine[] =
+          "# Attenuation mode: FIXED uses the ATTENUATION setting; RANDOM selects a random value each TX.\n"
+          "ATTENUATION_MODE=FIXED\n";
+        file.write(modeLine, sizeof(modeLine) - 1);
+      }
+      if (!haveAttenuationMin) {
+        const char minLine[] =
+          "# Minimum random attenuator value when ATTENUATION_MODE=RANDOM. Valid range: 0 to 127.\n"
+          "ATTENUATION_MIN=0\n";
+        file.write(minLine, sizeof(minLine) - 1);
+      }
+      if (!haveAttenuationMax) {
+        const char maxLine[] =
+          "# Maximum random attenuator value when ATTENUATION_MODE=RANDOM. Valid range: 0 to 127.\n"
+          "ATTENUATION_MAX=127\n";
+        file.write(maxLine, sizeof(maxLine) - 1);
       }
 
       if (!haveEnable) {
@@ -538,11 +668,90 @@ void ensureSstvSettingsPresent() {
       }
 
       file.close();
-      Serial.println("Added missing voice/SSTV settings to settings.txt");
+      Serial.println("Added missing voice/audio/attenuation/SSTV settings to settings.txt");
     }
   }
 
   closeRoot();
+}
+
+
+bool readFatFileLine(FatFile* f, String* outLine) {
+  if (!f || !outLine) {
+    return false;
+  }
+
+  outLine->remove(0);
+
+  bool gotAny = false;
+  int c;
+
+  while ((c = f->read()) >= 0) {
+    gotAny = true;
+
+    if (c == '\r') {
+      continue;
+    }
+
+    if (c == '\n') {
+      break;
+    }
+
+    *outLine += (char)c;
+  }
+
+  return gotAny;
+}
+
+void ensureSongsFilePresent() {
+  if (!openRoot()) return;
+  if (!root.exists(SONGS_TXT)) {
+    if (file.open(&root, SONGS_TXT, O_RDWR | O_CREAT | O_TRUNC)) {
+      file.write((const uint8_t*)DEFAULT_RTTTL, strlen(DEFAULT_RTTTL));
+      file.write((const uint8_t*)"\n", 1);
+      file.close();
+      Serial.println("Created songs.txt with default PicoFox RTTTL tune.");
+    }
+  }
+  closeRoot();
+}
+
+bool getNextRtttlSong(uint16_t* songIndex, String* outSong) {
+  if (!songIndex || !outSong || hostMounted) return false;
+  filesystemBusy = true;
+  if (!openRoot()) { filesystemBusy=false; return false; }
+  if (!file.open(&root, SONGS_TXT, O_RDONLY)) {
+    closeRoot(); filesystemBusy=false; return false;
+  }
+
+  uint16_t n=0;
+  String line;
+  while (file.available()) {
+    if (!readFatFileLine(&file, &line)) break;
+    line.trim();
+    if (!line.length() || line[0]=='#') continue;
+    if (n==*songIndex) {
+      *outSong=line;
+      (*songIndex)++;
+      file.close(); closeRoot(); filesystemBusy=false;
+      return true;
+    }
+    n++;
+  }
+
+  file.rewind();
+  while (file.available()) {
+    if (!readFatFileLine(&file, &line)) break;
+    line.trim();
+    if (!line.length() || line[0]=='#') continue;
+    *outSong=line;
+    *songIndex=1;
+    file.close(); closeRoot(); filesystemBusy=false;
+    return true;
+  }
+
+  file.close(); closeRoot(); filesystemBusy=false;
+  return false;
 }
 
 void flashCleanup() {
@@ -557,8 +766,7 @@ void flashCleanup() {
   }
 
   if (!root.exists(AUDIO_WAV)) {
-    Serial.println("No audio.wav found; creating default audio.");
-    saveDefaultAudio();
+    Serial.println("No audio.wav found; built-in RTTTL fallback will be used.");
   }
 
   closeRoot();
@@ -566,6 +774,7 @@ void flashCleanup() {
   // Existing PicoFox installations already have settings.txt, so add the new
   // stage-2 keys without destroying the user's current configuration.
   ensureSstvSettingsPresent();
+  ensureSongsFilePresent();
 }
 
 void loadSettings() {
@@ -581,12 +790,9 @@ void loadSettings() {
   }
 
   String line = "";
-  settingsCrc = 0;
 
   int c;
   while ((c = file.read()) >= 0) {
-    settingsCrc += c;
-
     char ch = (char)c;
 
     if (ch == '\r') {
@@ -613,18 +819,27 @@ void loadSettings() {
           settings.transmitFreqMHz = val.toDouble();
         } else if (key == "DUTY_CYCLE") {
           settings.dutyCyclePercent = val.toInt();
+        } else if (key == "ATTENUATION_MODE") {
+          val.toUpperCase();
+          settings.attenuationMode =
+            ((val == "RANDOM") || (val == "AUTO")) ? ATTENUATION_MODE_RANDOM : ATTENUATION_MODE_FIXED;
         } else if (key == "ATTENUATION") {
           settings.attenuation = val.toInt();
+        } else if (key == "ATTENUATION_MIN") {
+          settings.attenuationMin = val.toInt();
+        } else if (key == "ATTENUATION_MAX") {
+          settings.attenuationMax = val.toInt();
         } else if (key == "MORSE_WPM") {
           settings.morseWPM = val.toInt();
-        } else if (key == "MORSE_FARNSWORTH_WPM") {
-          settings.farnsworthWPM = val.toInt();
         } else if (key == "MORSE_TONE") {
           settings.morseToneHz = val.toInt();
         } else if (key == "MORSE_TONE_VOL") {
           settings.toneAmplitudePercent = val.toInt();
         } else if (key == "VOICE_ENABLE") {
           settings.voiceEnabled = (val.toInt() != 0);
+        } else if (key == "AUDIO_MODE") {
+          val.toUpperCase();
+          settings.audioMode = (val == "RTTTL") ? AUDIO_MODE_RTTTL : AUDIO_MODE_WAV;
         } else if (key == "SSTV_ENABLE") {
           settings.sstvEnabled = (val.toInt() != 0);
         } else if (key == "SSTV_MODE") {
@@ -651,8 +866,21 @@ void loadSettings() {
       val.trim();
       key.toUpperCase();
 
-      if (key == "VOICE_ENABLE") {
+      if (key == "ATTENUATION_MODE") {
+        val.toUpperCase();
+        settings.attenuationMode =
+          ((val == "RANDOM") || (val == "AUTO")) ? ATTENUATION_MODE_RANDOM : ATTENUATION_MODE_FIXED;
+      } else if (key == "ATTENUATION") {
+        settings.attenuation = val.toInt();
+      } else if (key == "ATTENUATION_MIN") {
+        settings.attenuationMin = val.toInt();
+      } else if (key == "ATTENUATION_MAX") {
+        settings.attenuationMax = val.toInt();
+      } else if (key == "VOICE_ENABLE") {
         settings.voiceEnabled = (val.toInt() != 0);
+      } else if (key == "AUDIO_MODE") {
+        val.toUpperCase();
+        settings.audioMode = (val == "RTTTL") ? AUDIO_MODE_RTTTL : AUDIO_MODE_WAV;
       } else if (key == "SSTV_ENABLE") {
         settings.sstvEnabled = (val.toInt() != 0);
       } else if (key == "SSTV_MODE") {
@@ -674,15 +902,24 @@ void loadSettings() {
   if (settings.attenuation > 127) {
     settings.attenuation = 127;
   }
+  if (settings.attenuationMin > 127) {
+    settings.attenuationMin = 127;
+  }
+  if (settings.attenuationMax > 127) {
+    settings.attenuationMax = 127;
+  }
+  // RANDOM attenuation requires ATTENUATION_MIN <= ATTENUATION_MAX.
+  // If the values are reversed in settings.txt, normalize them automatically.
+  if (settings.attenuationMin > settings.attenuationMax) {
+    uint8_t temp = settings.attenuationMin;
+    settings.attenuationMin = settings.attenuationMax;
+    settings.attenuationMax = temp;
+  }
 
   if (settings.morseWPM == 0 || settings.morseWPM > 30) {
     settings.morseWPM = DEFAULT_WPM;
   }
 
-  if (settings.farnsworthWPM == 0 ||
-      settings.farnsworthWPM < settings.morseWPM) {
-    settings.farnsworthWPM = settings.morseWPM;
-  }
 
   if (settings.morseToneHz < 100 || settings.morseToneHz >= 2500) {
     settings.morseToneHz = DEFAULT_MORSE_TONE_HZ;
@@ -715,172 +952,125 @@ void loadSettings() {
   }
 }
 
-bool settingsChanged() {
-  bool changed = true;
-
+void ensureSettingsComments() {
   if (!openRoot()) {
-    return true;
+    return;
   }
 
-  if (file.open(&root, SETTINGS_CRC, O_RDONLY)) {
-    int savedCrc = 0;
+  if (!file.open(&root, SETTINGS_TXT, O_RDONLY)) {
+    closeRoot();
+    return;
+  }
 
-    if (file.read((void*)&savedCrc, sizeof(savedCrc)) == sizeof(savedCrc)) {
-      changed = (savedCrc != settingsCrc);
+  bool currentComments = false;
+  String line;
+
+  while (readFatFileLine(&file, &line)) {
+    line.trim();
+    if (line == "# Alphanumeric callsign, maximum 12 characters.") {
+      currentComments = true;
+      break;
     }
+  }
 
+  file.close();
+
+  if (currentComments) {
+    closeRoot();
+    return;
+  }
+
+  char buffer[3072];
+
+  snprintf(
+    buffer,
+    sizeof(buffer),
+    "# Alphanumeric callsign, maximum 12 characters.\n"
+    "CALLSIGN=%s\n"
+    "\n"
+    "# ITU zone where the transmitter operates. Valid values: 1, 2, or 3.\n"
+    "ITU_ZONE=%u\n"
+    "\n"
+    "# Transmit frequency in MHz.\n"
+    "FREQ_MHZ=%.6f\n"
+    "\n"
+    "# Transmit duty cycle percentage, valid range 0 to 100.\n"
+    "# If SSTV mode is enabled, this must be less than 80.\n"
+    "DUTY_CYCLE=%u\n"
+    "\n"
+    "# Attenuation mode: FIXED uses the ATTENUATION setting; RANDOM selects a random value each TX.\n"
+    "ATTENUATION_MODE=%s\n"
+    "\n"
+    "# ATTENUATION setting used when ATTENUATION_MODE=FIXED. Valid range: 0 to 127, approximately 0.25 dB per step.\n"
+    "ATTENUATION=%u\n"
+    "\n"
+    "# ATTENUATION_MIN is the lowest value used in RANDOM mode. Valid range: 0 to 127, approximately 0.25 dB per step.\n"
+    "# ATTENUATION_MIN must be less than ATTENUATION_MAX.\n"
+    "ATTENUATION_MIN=%u\n"
+    "\n"
+    "# ATTENUATION_MAX is the highest value used in RANDOM mode. Valid range: 0 to 127, approximately 0.25 dB per step.\n"
+    "# ATTENUATION_MAX must be greater than ATTENUATION_MIN.\n"
+    "ATTENUATION_MAX=%u\n"
+    "\n"
+    "# Morse ID speed in words per minute.\n"
+    "MORSE_WPM=%u\n"
+    "\n"
+    "# Morse tone frequency in Hz. Valid range: 100 to 2000 Hz.\n"
+    "MORSE_TONE=%u\n"
+    "\n"
+    "# Morse tone volume percentage. Valid range: 1 to 100.\n"
+    "MORSE_TONE_VOL=%u\n"
+    "\n"
+    "# Enables the Voice/Audio file and Morse code mode. 1=enabled, 0=disabled.\n"
+    "VOICE_ENABLE=%u\n"
+    "\n"
+    "# Selects the normal audio source. Valid values: WAV or RTTTL.\n"
+    "# WAV uses audio.wav, audio1.wav, audio2.wav, etc.\n"
+    "# RTTTL uses one song per line from songs.txt and rotates through the list.\n"
+    "# RTTTL format and example songs:\n"
+    "# https://1j01.github.io/rtttl.js/\n"
+    "# https://github.com/neverfa11ing/FlipperMusicRTTTL\n"
+    "AUDIO_MODE=%s\n"
+    "\n"
+    "# Enables SSTV mode. 1=enabled, 0=disabled.\n"
+    "# You MUST set DUTY_CYCLE to less than 80 for SSTV mode to work correctly.\n"
+    "SSTV_ENABLE=%u\n"
+    "\n"
+    "# SSTV encoding mode. Currently ONLY ROBOT36 is supported.\n"
+    "SSTV_MODE=ROBOT36\n",
+    settings.callsign,
+    settings.ituZone,
+    settings.transmitFreqMHz,
+    settings.dutyCyclePercent,
+    settings.attenuationMode == ATTENUATION_MODE_RANDOM ? "RANDOM" : "FIXED",
+    settings.attenuation,
+    settings.attenuationMin,
+    settings.attenuationMax,
+    settings.morseWPM,
+    settings.morseToneHz,
+    settings.toneAmplitudePercent,
+    settings.voiceEnabled ? 1 : 0,
+    settings.audioMode == AUDIO_MODE_RTTTL ? "RTTTL" : "WAV",
+    settings.sstvEnabled ? 1 : 0
+  );
+
+  if (file.open(&root, SETTINGS_TXT, O_RDWR | O_CREAT | O_TRUNC)) {
+    file.write(buffer, strlen(buffer));
     file.close();
+    Serial.println("Updated settings.txt with configuration comments.");
   }
 
   closeRoot();
-  return changed;
 }
 
 // -----------------------------------------------------------------------------
 // Morse generation
 // -----------------------------------------------------------------------------
 
-void generateMorseAudio() {
-  if (!openRoot()) {
-    return;
-  }
-
-  if (file.open(&root, CALLSIGN_WAV, O_RDWR | O_CREAT)) {
-    file.remove();
-  }
-
-  if (!file.open(&root, CALLSIGN_WAV, O_RDWR | O_CREAT | O_TRUNC)) {
-    Serial.println("Failed to create .callsign.wav");
-    closeRoot();
-    return;
-  }
-
-  file.write(wavHeader, sizeof(wavHeader));
-
-  const int sampleRate = AUDIO_SAMPLE_RATE_HZ;
-  const int toneFreq = settings.morseToneHz;
-  const double ditLengthSec = 1.2 / settings.morseWPM;
-  const double interCharLengthSec = (1.2 / settings.farnsworthWPM) * 3.0;
-  const double riseFall = (1.0 / 3.0) * ditLengthSec * sampleRate;
-  const int amplitude =
-    (settings.toneAmplitudePercent * 32767L) / 100L;
-  const double toneStep =
-    2.0 * PI * toneFreq / sampleRate;
-
-  auto writeTone = [&](double durationSec) {
-    int samples = (int)(durationSec * sampleRate);
-
-    for (int i = 0; i < samples; i++) {
-      double envelope = 1.0;
-
-      if (i < riseFall) {
-        envelope = i / riseFall;
-      } else if (i > samples - riseFall) {
-        envelope = (samples - i) / riseFall;
-      }
-
-      int16_t sample =
-        (int16_t)(amplitude * envelope * sin(toneStep * i));
-
-      file.write((uint8_t*)&sample, 2);
-    }
-  };
-
-  auto writeSilence = [&](double durationSec) {
-    int samples = (int)(durationSec * sampleRate);
-    int16_t zero = 0;
-
-    for (int i = 0; i < samples; i++) {
-      file.write((uint8_t*)&zero, 2);
-    }
-  };
-
-  const char* morseTable[36] = {
-    ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..",
-    ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.",
-    "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--..",
-    "-----", ".----", "..---", "...--", "....-",
-    ".....", "-....", "--...", "---..", "----."
-  };
-
-  auto getMorse = [&](char c) -> const char* {
-    if (c >= 'A' && c <= 'Z') {
-      return morseTable[c - 'A'];
-    }
-
-    if (c >= '0' && c <= '9') {
-      return morseTable[c - '0' + 26];
-    }
-
-    return "";
-  };
-
-  writeSilence(interCharLengthSec);
-
-  for (int i = 0; settings.callsign[i] && i < 12; i++) {
-    const char* symbol = getMorse(settings.callsign[i]);
-
-    for (int j = 0; symbol[j]; j++) {
-      if (j != 0) {
-        writeSilence(ditLengthSec);
-      }
-
-      if (symbol[j] == '.') {
-        writeTone(ditLengthSec);
-      } else if (symbol[j] == '-') {
-        writeTone(3.0 * ditLengthSec);
-      }
-    }
-
-    writeSilence(interCharLengthSec);
-  }
-
-  file.close();
-
-  if (file.open(&root, SETTINGS_CRC, O_RDWR | O_CREAT | O_TRUNC)) {
-    file.write((const void*)&settingsCrc, sizeof(settingsCrc));
-    file.close();
-  }
-
-  closeRoot();
-}
-
-void generateMorseIfNeeded() {
-  if (!settings.voiceEnabled) {
-    Serial.println("VOICE_ENABLE=0; skipping Morse audio generation.");
-
-    // Record the current settings CRC even though no Morse file needs
-    // regeneration. This prevents settingsChanged() from firing every boot.
-    if (openRoot()) {
-      if (file.open(&root, SETTINGS_CRC, O_RDWR | O_CREAT | O_TRUNC)) {
-        file.write((const void*)&settingsCrc, sizeof(settingsCrc));
-        file.close();
-      }
-      closeRoot();
-    }
-
-    return;
-  }
-
-  bool regenerate = settingsChanged();
-
-  if (openRoot()) {
-    if (!root.exists(CALLSIGN_WAV)) {
-      regenerate = true;
-    }
-    closeRoot();
-  }
-
-  if (regenerate) {
-    Serial.println("Generating Morse callsign audio.");
-    generateMorseAudio();
-  }
-}
-
 void loadFlashData() {
   flashCleanup();
   loadSettings();
-  generateMorseIfNeeded();
+  ensureSettingsComments();
 }
 
 // -----------------------------------------------------------------------------
@@ -958,17 +1148,74 @@ void programAttenuator(uint8_t attenuation) {
   startWire();
 }
 
-uint8_t getAttenuationCycleValue(uint8_t baseAttenuation,
-                                 uint8_t cycleStep) {
-  uint16_t attenuation =
-    baseAttenuation +
-    ATTENUATION_CYCLE_OFFSETS[cycleStep % 3];
+uint32_t nextAttenuationRandom() {
+  // xorshift32 gives a simple, fast PRNG with a full 32-bit state. This avoids
+  // relying on core-specific Arduino random() behavior for attenuation.
+  uint32_t x = attenuationRandomState;
 
-  if (attenuation > 127) {
-    attenuation = 127;
+  if (x == 0) {
+    x = 0x6D2B79F5UL;
   }
 
-  return (uint8_t)attenuation;
+  x ^= x << 13;
+  x ^= x >> 17;
+  x ^= x << 5;
+
+  attenuationRandomState = x;
+  return x;
+}
+
+uint8_t selectAttenuationForTransmit() {
+  uint8_t selected = settings.attenuation;
+
+  if (settings.attenuationMode == ATTENUATION_MODE_RANDOM) {
+    uint8_t minValue = settings.attenuationMin;
+    uint8_t maxValue = settings.attenuationMax;
+
+    // Settings validation normally guarantees this already, but keep the TX
+    // path safe even if values are changed later.
+    if (minValue > maxValue) {
+      uint8_t temp = minValue;
+      minValue = maxValue;
+      maxValue = temp;
+    }
+
+    if (minValue == maxValue) {
+      selected = minValue;
+    } else {
+      // Inclusive range. For 0..127 this produces a span of 128 values.
+      uint16_t span =
+        (uint16_t)maxValue - (uint16_t)minValue + 1U;
+
+      selected =
+        (uint8_t)(
+          (uint16_t)minValue +
+          (nextAttenuationRandom() % span)
+        );
+
+      // RANDOM mode should visibly change each TX whenever the range contains
+      // at least two values.
+      if (selected == lastRandomAttenuation) {
+        uint16_t offset =
+          ((uint16_t)selected - (uint16_t)minValue + 1U) % span;
+        selected = (uint8_t)((uint16_t)minValue + offset);
+      }
+    }
+
+    lastRandomAttenuation = selected;
+  }
+
+  programAttenuator(selected);
+
+  Serial.print("TX attenuation: ");
+  Serial.print(selected);
+  Serial.print(" (");
+  Serial.print(
+    settings.attenuationMode == ATTENUATION_MODE_RANDOM ? "RANDOM" : "FIXED"
+  );
+  Serial.println(")");
+
+  return selected;
 }
 
 int32_t getCarrierOffsetHz(uint8_t sequenceStep) {
@@ -1000,8 +1247,7 @@ void setFrequencyOffset(double deviation) {
 }
 
 void delayForSampleRate(uint32_t startUs, uint32_t sampleRateHz) {
-  uint32_t sampleDelta =
-    (1000000UL / sampleRateHz) + SAMPLE_WRITE_CORR_US;
+  uint32_t sampleDelta = 1000000UL / sampleRateHz;
 
   while ((uint32_t)(micros() - startUs) < sampleDelta) {
     // busy wait for consistent modulation timing
@@ -1009,9 +1255,8 @@ void delayForSampleRate(uint32_t startUs, uint32_t sampleRateHz) {
 }
 
 
-// SSTV must not inherit SAMPLE_WRITE_CORR_US. Robot36 timing is generated
-// against an absolute 8 kHz clock so per-sample execution overhead cannot
-// accumulate into line slant.
+// Robot36 timing uses its own absolute 8 kHz clock so per-sample execution
+// overhead cannot accumulate into line slant.
 static inline bool timeBeforeUs(uint32_t nowUs, uint32_t deadlineUs) {
   return (int32_t)(nowUs - deadlineUs) < 0;
 }
@@ -1220,16 +1465,375 @@ void setFastSstvDeviation(double audioDeviationHz) {
 }
 
 // -----------------------------------------------------------------------------
+// 8 kHz normal-audio / RTTTL / live-Morse synthesizer
+// -----------------------------------------------------------------------------
+
+bool buildAudioPllTable(int32_t carrierOffsetHz) {
+  audioPllCarrierOffsetHz = carrierOffsetHz;
+  audioPllWriteErrors = 0;
+
+  for (uint16_t level = 0; level < AUDIO_PLL_TABLE_LEVELS; level++) {
+    int32_t audioDeviationHz =
+      -AUDIO_FM_DEVIATION_HZ +
+      (int32_t)(((int64_t)level * (2LL * AUDIO_FM_DEVIATION_HZ)) /
+                (AUDIO_PLL_TABLE_LEVELS - 1));
+
+    calculateSstvPllRegisters(
+      carrierOffsetHz + audioDeviationHz,
+      audioPllTable[level].reg
+    );
+  }
+
+  return true;
+}
+
+bool writeAudioPllEntry(uint16_t index) {
+  if (index >= AUDIO_PLL_TABLE_LEVELS) {
+    index = AUDIO_PLL_TABLE_LEVELS - 1;
+  }
+
+  Wire.beginTransmission(SI5351_I2C_ADDRESS);
+  Wire.write((uint8_t)SI5351_PLLA_PARAMETERS_REG);
+  for (uint8_t i = 0; i < 8; i++) {
+    Wire.write(audioPllTable[index].reg[i]);
+  }
+
+  uint8_t result = Wire.endTransmission();
+  if (result != 0) {
+    audioPllWriteErrors++;
+    return false;
+  }
+  return true;
+}
+
+void buildAudioSineTable(uint8_t amplitudePercent) {
+  if (amplitudePercent > 100) amplitudePercent = 100;
+
+  for (uint16_t i = 0; i < 256; i++) {
+    double phase = (2.0 * PI * (double)i) / 256.0;
+    double deviation =
+      sin(phase) * (double)AUDIO_FM_DEVIATION_HZ *
+      ((double)amplitudePercent / 100.0);
+
+    double normalized =
+      (deviation + AUDIO_FM_DEVIATION_HZ) /
+      (2.0 * AUDIO_FM_DEVIATION_HZ);
+
+    uint16_t tableIndex =
+      (uint16_t)(normalized * (AUDIO_PLL_TABLE_LEVELS - 1) + 0.5);
+
+    if (tableIndex >= AUDIO_PLL_TABLE_LEVELS) {
+      tableIndex = AUDIO_PLL_TABLE_LEVELS - 1;
+    }
+
+    audioSinePllIndex[i] = tableIndex;
+  }
+}
+
+uint32_t audioPhaseIncrementForTone(uint16_t toneHz) {
+  return (uint32_t)(
+    (((uint64_t)toneHz << 32) + (AUDIO_SAMPLE_RATE_HZ / 2)) /
+    AUDIO_SAMPLE_RATE_HZ
+  );
+}
+
+static inline bool timeBeforeAudioUs(uint32_t nowUs, uint32_t deadlineUs) {
+  return (int32_t)(nowUs - deadlineUs) < 0;
+}
+
+static inline void waitForAudioDeadline(uint32_t deadlineUs) {
+  while (timeBeforeAudioUs(micros(), deadlineUs)) {
+    tight_loop_contents();
+  }
+}
+
+uint32_t sendAudioTone(uint16_t toneHz,
+                       uint32_t durationUs,
+                       uint8_t amplitudePercent) {
+  if (toneHz == 0 || durationUs == 0 || hostMounted) return 0;
+
+  buildAudioSineTable(amplitudePercent);
+
+  const uint32_t phaseIncrement = audioPhaseIncrementForTone(toneHz);
+  uint32_t samples =
+    (uint32_t)(((uint64_t)durationUs * AUDIO_SAMPLE_RATE_HZ + 500000ULL) /
+               1000000ULL);
+  if (samples < 1) samples = 1;
+
+  uint32_t nextDeadlineUs = micros();
+
+  for (uint32_t i = 0; i < samples; i++) {
+    if (hostMounted) break;
+
+    uint8_t sineIndex = (uint8_t)(audioPhase32 >> 24);
+    writeAudioPllEntry(audioSinePllIndex[sineIndex]);
+    audioPhase32 += phaseIncrement;
+
+    nextDeadlineUs += AUDIO_SAMPLE_PERIOD_US;
+    uint32_t nowUs = micros();
+
+    if (timeBeforeAudioUs(nowUs, nextDeadlineUs)) {
+      waitForAudioDeadline(nextDeadlineUs);
+    }
+  }
+
+  return (samples * 1000UL) / AUDIO_SAMPLE_RATE_HZ;
+}
+
+void sendAudioSilence(uint32_t durationUs) {
+  if (durationUs == 0 || hostMounted) return;
+
+  writeAudioPllEntry((AUDIO_PLL_TABLE_LEVELS - 1) / 2);
+
+  uint32_t deadlineUs = micros() + durationUs;
+  while (timeBeforeAudioUs(micros(), deadlineUs)) {
+    if (hostMounted) return;
+    tight_loop_contents();
+  }
+}
+
+static uint16_t rtttlNoteFrequency(uint8_t semitone, uint8_t octave) {
+  int midiNote = 12 * ((int)octave + 1) + semitone;
+  double hz = 440.0 * pow(2.0, ((double)midiNote - 69.0) / 12.0);
+  if (hz < 1.0) return 1;
+  if (hz > 3999.0) return 3999;
+  return (uint16_t)(hz + 0.5);
+}
+
+static void skipRtttlSpaces(const char*& p) {
+  while (*p == ' ' || *p == '\t') p++;
+}
+
+static uint16_t parseRtttlNumber(const char*& p) {
+  uint16_t value = 0;
+  while (*p >= '0' && *p <= '9') {
+    value = (uint16_t)(value * 10U + (uint16_t)(*p - '0'));
+    p++;
+  }
+  return value;
+}
+
+uint32_t playRtttl(const char* rtttl, int32_t carrierOffsetHz) {
+  if (!rtttl || !*rtttl || hostMounted) return 0;
+
+  uint16_t defaultDuration = 4;
+  uint8_t defaultOctave = 6;
+  uint16_t bpm = 63;
+
+  const char* p = strchr(rtttl, ':');
+  if (!p) {
+    Serial.println("Invalid RTTTL: missing defaults separator.");
+    return 0;
+  }
+  p++;
+
+  while (*p && *p != ':') {
+    skipRtttlSpaces(p);
+
+    char key = (char)tolower((unsigned char)*p);
+    if (*p) p++;
+
+    if (*p == '=') {
+      p++;
+      uint16_t value = parseRtttlNumber(p);
+
+      if (key == 'd' && value > 0) defaultDuration = value;
+      else if (key == 'o' && value >= 3 && value <= 7) defaultOctave = (uint8_t)value;
+      else if (key == 'b' && value >= 25 && value <= 900) bpm = value;
+    }
+
+    while (*p && *p != ',' && *p != ':') p++;
+    if (*p == ',') p++;
+  }
+
+  if (*p != ':') {
+    Serial.println("Invalid RTTTL: missing note separator.");
+    return 0;
+  }
+  p++;
+
+  buildAudioPllTable(carrierOffsetHz);
+  audioPhase32 = 0;
+
+  uint32_t totalMs = 0;
+  const uint32_t wholeNoteUs = 240000000UL / bpm;
+
+  while (*p && !hostMounted) {
+    skipRtttlSpaces(p);
+    if (!*p) break;
+
+    uint16_t durationDivisor = parseRtttlNumber(p);
+    if (durationDivisor == 0) durationDivisor = defaultDuration;
+
+    char noteChar = (char)tolower((unsigned char)*p);
+    if (*p) p++;
+
+    bool rest = (noteChar == 'p');
+    int8_t semitone = -1;
+
+    switch (noteChar) {
+      case 'c': semitone = 0; break;
+      case 'd': semitone = 2; break;
+      case 'e': semitone = 4; break;
+      case 'f': semitone = 5; break;
+      case 'g': semitone = 7; break;
+      case 'a': semitone = 9; break;
+      case 'b': semitone = 11; break;
+      case 'p': break;
+      default:
+        while (*p && *p != ',') p++;
+        if (*p == ',') p++;
+        continue;
+    }
+
+    if (!rest && *p == '#') {
+      semitone++;
+      if (semitone > 11) semitone = 0;
+      p++;
+    }
+
+    bool dotted = false;
+    if (*p == '.') {
+      dotted = true;
+      p++;
+    }
+
+    uint16_t explicitOctave = parseRtttlNumber(p);
+    uint8_t octave = explicitOctave ? (uint8_t)explicitOctave : defaultOctave;
+
+    if (*p == '.') {
+      dotted = true;
+      p++;
+    }
+
+    uint32_t durationUs = wholeNoteUs / durationDivisor;
+    if (dotted) durationUs += durationUs / 2;
+
+    if (rest) {
+      sendAudioSilence(durationUs);
+      totalMs += durationUs / 1000UL;
+    } else {
+      uint16_t toneHz = rtttlNoteFrequency((uint8_t)semitone, octave);
+      totalMs += sendAudioTone(toneHz, durationUs, 100);
+    }
+
+    while (*p && *p != ',') p++;
+    if (*p == ',') p++;
+  }
+
+  return totalMs;
+}
+
+uint32_t sendMorseCallsign(int32_t carrierOffsetHz) {
+  if (hostMounted || !settings.callsign[0]) return 0;
+
+  buildAudioPllTable(carrierOffsetHz);
+  audioPhase32 = 0;
+
+  const char* morseTable[36] = {
+    ".-", "-...", "-.-.", "-..", ".", "..-.", "--.", "....", "..",
+    ".---", "-.-", ".-..", "--", "-.", "---", ".--.", "--.-", ".-.",
+    "...", "-", "..-", "...-", ".--", "-..-", "-.--", "--..",
+    "-----", ".----", "..---", "...--", "....-",
+    ".....", "-....", "--...", "---..", "----."
+  };
+
+  auto getMorse = [&](char c) -> const char* {
+    if (c >= 'a' && c <= 'z') c -= 32;
+
+    if (c >= 'A' && c <= 'Z') {
+      return morseTable[c - 'A'];
+    }
+
+    if (c >= '0' && c <= '9') {
+      return morseTable[c - '0' + 26];
+    }
+
+    if (c == '/') {
+      return "-..-.";
+    }
+
+    return "";
+  };
+
+  // Standard PARIS timing:
+  //   dot             = 1 unit
+  //   dash            = 3 units
+  //   element gap     = 1 unit
+  //   character gap   = 3 units
+  //   word gap        = 7 units
+  //
+  // A standard word is 50 units, giving:
+  //   dot length = 1200 / MORSE_WPM milliseconds.
+  //
+  // All timing is intentionally derived from MORSE_WPM so the transmitted
+  // callsign speed matches that setting exactly.
+  const uint32_t ditUs = 1200000UL / settings.morseWPM;
+  const uint32_t dahUs = 3UL * ditUs;
+  const uint32_t elementGapUs = ditUs;
+  const uint32_t characterGapUs = 3UL * ditUs;
+  const uint32_t wordGapUs = 7UL * ditUs;
+
+  uint32_t totalMs = 0;
+  bool previousWasCharacter = false;
+
+  for (uint8_t i = 0;
+       settings.callsign[i] && i < sizeof(settings.callsign);
+       i++) {
+
+    char c = settings.callsign[i];
+
+    if (c == ' ') {
+      // The previous character already ended without an added gap. Emit the
+      // complete standard 7-unit word space here.
+      sendAudioSilence(wordGapUs);
+      totalMs += wordGapUs / 1000UL;
+      previousWasCharacter = false;
+      continue;
+    }
+
+    const char* symbols = getMorse(c);
+    if (!symbols[0]) {
+      continue;
+    }
+
+    // Insert exactly the standard 3-unit gap between adjacent characters.
+    if (previousWasCharacter) {
+      sendAudioSilence(characterGapUs);
+      totalMs += characterGapUs / 1000UL;
+    }
+
+    for (uint8_t j = 0; symbols[j]; j++) {
+      if (j != 0) {
+        sendAudioSilence(elementGapUs);
+        totalMs += elementGapUs / 1000UL;
+      }
+
+      uint32_t toneUs =
+        (symbols[j] == '-') ? dahUs : ditUs;
+
+      totalMs +=
+        sendAudioTone(
+          settings.morseToneHz,
+          toneUs,
+          settings.toneAmplitudePercent
+        );
+    }
+
+    previousWasCharacter = true;
+  }
+
+  return totalMs;
+}
+
+// -----------------------------------------------------------------------------
 // Existing WAV playback
 // -----------------------------------------------------------------------------
 
 uint32_t playAudio(const char* filename, int32_t carrierOffsetHz) {
-  if (hostMounted) {
-    return 0;
-  }
+  if (hostMounted) return 0;
 
   filesystemBusy = true;
-
   if (hostMounted) {
     filesystemBusy = false;
     return 0;
@@ -1241,72 +1845,89 @@ uint32_t playAudio(const char* filename, int32_t carrierOffsetHz) {
   }
 
   if (!file.open(&root, filename, O_RDONLY)) {
-    Serial.println("Failed to open audio file.");
     closeRoot();
     filesystemBusy = false;
     return 0;
   }
 
-  char header[44];
+  uint8_t header[44];
 
-  if (file.read(header, 44) != 44) {
+  if (file.read(header, sizeof(header)) != (int)sizeof(header)) {
+    Serial.println("WAV header is incomplete.");
     file.close();
     closeRoot();
     filesystemBusy = false;
     return 0;
   }
 
-  if (strncmp(header, "RIFF", 4) != 0 ||
-      strncmp(header + 8, "WAVE", 4) != 0) {
+  if (memcmp(header, "RIFF", 4) != 0 ||
+      memcmp(header + 8, "WAVE", 4) != 0 ||
+      memcmp(header + 12, "fmt ", 4) != 0) {
+    Serial.println("Unsupported WAV header.");
     file.close();
     closeRoot();
     filesystemBusy = false;
     return 0;
   }
 
-#ifdef DEBUG
-  uint32_t startMicros = micros();
-#endif
+  uint16_t audioFormat = (uint16_t)header[20] | ((uint16_t)header[21] << 8);
+  uint16_t channels = (uint16_t)header[22] | ((uint16_t)header[23] << 8);
+  uint32_t sampleRate =
+    (uint32_t)header[24] |
+    ((uint32_t)header[25] << 8) |
+    ((uint32_t)header[26] << 16) |
+    ((uint32_t)header[27] << 24);
+  uint16_t bitsPerSample = (uint16_t)header[34] | ((uint16_t)header[35] << 8);
+
+  if (audioFormat != 1 ||
+      channels != 1 ||
+      sampleRate != AUDIO_SAMPLE_RATE_HZ ||
+      bitsPerSample != 16) {
+    Serial.print("WAV must be 8000 Hz, mono, 16-bit PCM. Found ");
+    Serial.print(sampleRate);
+    Serial.print(" Hz, ");
+    Serial.print(channels);
+    Serial.print(" channel(s), ");
+    Serial.print(bitsPerSample);
+    Serial.println(" bit.");
+    file.close();
+    closeRoot();
+    filesystemBusy = false;
+    return 0;
+  }
+
+  buildAudioPllTable(carrierOffsetHz);
 
   uint32_t numSamples = 0;
-  int16_t sample;
+  uint8_t buffer[512];
 
-  while (file.read((uint8_t*)&sample, 2) == 2) {
-    // USB MSC sets hostMounted before modifying any FAT sectors. Close our
-    // file immediately so the host can safely take over the volume.
-    if (hostMounted) {
-      file.close();
-      closeRoot();
-      filesystemBusy = false;
-      return 0;
+  while (!hostMounted) {
+    int bytesRead = file.read(buffer, sizeof(buffer));
+    if (bytesRead <= 0) break;
+    bytesRead &= ~1;
+
+    uint32_t nextDeadlineUs = micros();
+
+    for (int pos = 0; pos < bytesRead; pos += 2) {
+      if (hostMounted) break;
+
+      int16_t sample =
+        (int16_t)((uint16_t)buffer[pos] | ((uint16_t)buffer[pos + 1] << 8));
+
+      uint32_t unsignedSample = (uint32_t)((int32_t)sample + 32768L);
+      uint16_t tableIndex =
+        (uint16_t)((unsignedSample * (AUDIO_PLL_TABLE_LEVELS - 1UL)) / 65535UL);
+
+      writeAudioPllEntry(tableIndex);
+      numSamples++;
+
+      nextDeadlineUs += AUDIO_SAMPLE_PERIOD_US;
+      uint32_t nowUs = micros();
+      if (timeBeforeAudioUs(nowUs, nextDeadlineUs)) {
+        waitForAudioDeadline(nextDeadlineUs);
+      }
     }
-
-    uint32_t start = micros();
-
-    double deviation =
-      carrierOffsetHz +
-      (((double)sample * AUDIO_FM_DEVIATION_HZ) / 32767.0);
-
-    setFrequencyOffset(deviation);
-
-    numSamples++;
-    delayForSampleRate(start, AUDIO_SAMPLE_RATE_HZ);
   }
-
-#ifdef DEBUG
-  uint32_t endMicros = micros();
-
-  Serial.print("Audio total us: ");
-  Serial.println(endMicros - startMicros);
-
-  Serial.print("Audio samples: ");
-  Serial.println(numSamples);
-
-  if (numSamples) {
-    Serial.print("Audio us/sample: ");
-    Serial.println((double)(endMicros - startMicros) / numSamples);
-  }
-#endif
 
   file.close();
   closeRoot();
@@ -1438,7 +2059,7 @@ void reportSstvTimingStats() {
   Serial.println(" us");
 
   Serial.print("SSTV timing correction: ");
-  Serial.println("0 us (SAMPLE_WRITE_CORR_US applies only to normal audio)");
+  Serial.println("0 us (SSTV uses its own exact timing path)");
 
   Serial.print("Si5351 updates measured: ");
   Serial.println(sstvStats.updates);
@@ -1594,8 +2215,7 @@ bool nextSequencedFile(const char* prefix,
   return true;
 }
 
-void applyDutyCycleOff(uint32_t activeLengthMs,
-                       uint8_t* attenuationCycleStep) {
+void applyDutyCycleOff(uint32_t activeLengthMs) {
   if (settings.dutyCyclePercent >= 100 ||
       settings.dutyCyclePercent == 0 ||
       activeLengthMs == 0) {
@@ -1603,77 +2223,91 @@ void applyDutyCycleOff(uint32_t activeLengthMs,
   }
 
   uint32_t offTime =
-    ((100 - settings.dutyCyclePercent) *
-     activeLengthMs) / 100;
+    (uint32_t)(
+      ((uint64_t)activeLengthMs *
+       (100U - settings.dutyCyclePercent)) /
+      settings.dutyCyclePercent
+    );
 
   setSi5351Output(false);
 
-  programAttenuator(
-    getAttenuationCycleValue(
-      settings.attenuation,
-      *attenuationCycleStep
-    )
-  );
-
-  *attenuationCycleStep =
-    (*attenuationCycleStep + 1) % 3;
+  Serial.print("Duty cycle: ");
+  Serial.print(settings.dutyCyclePercent);
+  Serial.print("%, TX=");
+  Serial.print(activeLengthMs);
+  Serial.print(" ms, OFF=");
+  Serial.print(offTime);
+  Serial.println(" ms");
 
   delay(offTime);
 }
 
 uint32_t playNextNormalTransmission(uint8_t* carrierSequenceStep,
-                                    uint16_t* audioSequenceIndex) {
-  if (hostMounted) {
-    return 0;
-  }
+                                    uint16_t* audioSequenceIndex,
+                                    uint16_t* songSequenceIndex) {
+  if (hostMounted) return 0;
 
-  char audioFilename[32];
-
-  // Prefer audio.wav, then audio1.wav, audio2.wav, ...
-  bool haveAudio =
-    nextSequencedFile(
-      AUDIO_SEQUENCE_PREFIX,
-      AUDIO_SEQUENCE_EXT,
-      audioSequenceIndex,
-      audioFilename,
-      sizeof(audioFilename)
-    );
-
-  if (!haveAudio) {
-    strncpy(audioFilename, AUDIO_WAV, sizeof(audioFilename) - 1);
-    audioFilename[sizeof(audioFilename) - 1] = '\0';
-  }
-
-  int32_t carrierOffsetHz =
-    getCarrierOffsetHz(*carrierSequenceStep);
-
+  int32_t carrierOffsetHz = getCarrierOffsetHz(*carrierSequenceStep);
   *carrierSequenceStep =
     (*carrierSequenceStep + 1) %
-    (sizeof(CARRIER_OFFSET_SEQUENCE_HZ) /
-     sizeof(CARRIER_OFFSET_SEQUENCE_HZ[0]));
+    (sizeof(CARRIER_OFFSET_SEQUENCE_HZ) / sizeof(CARRIER_OFFSET_SEQUENCE_HZ[0]));
 
+  // Key the transmitter on a clean carrier, then allow 100 ms for the RF
+  // path and receiving radio to settle before beginning WAV/RTTTL audio.
   setFrequencyOffset(carrierOffsetHz);
   setSi5351Output(true);
+  delay(TX_KEYUP_DELAY_MS);
 
-  Serial.print("Normal TX: ");
-  Serial.println(audioFilename);
+  // Key-up and inter-segment carrier time are real RF-on time and therefore
+  // must be included when calculating the configured duty cycle.
+  uint32_t activeLengthMs = TX_KEYUP_DELAY_MS;
 
-  uint32_t activeLengthMs =
-    playAudio(audioFilename, carrierOffsetHz);
+  if (settings.audioMode == AUDIO_MODE_RTTTL) {
+    String song;
+    if (getNextRtttlSong(songSequenceIndex, &song)) {
+      Serial.print("Normal TX RTTTL: ");
+      int colon= song.indexOf(':');
+      Serial.println(colon > 0 ? song.substring(0, colon) : String("(unnamed)"));
+      activeLengthMs += playRtttl(song.c_str(), carrierOffsetHz);
+    } else {
+      Serial.println("No valid songs.txt entries; using built-in RTTTL fallback.");
+      activeLengthMs += playRtttl(DEFAULT_RTTTL, carrierOffsetHz);
+    }
+  } else {
+    char audioFilename[32];
+    bool haveAudio = nextSequencedFile(
+      AUDIO_SEQUENCE_PREFIX, AUDIO_SEQUENCE_EXT,
+      audioSequenceIndex, audioFilename, sizeof(audioFilename));
 
+    if (haveAudio) {
+      Serial.print("Normal TX WAV: ");
+      Serial.println(audioFilename);
+      activeLengthMs += playAudio(audioFilename, carrierOffsetHz);
+    } else {
+      Serial.println("audio.wav missing; using built-in RTTTL fallback.");
+      activeLengthMs += playRtttl(DEFAULT_RTTTL, carrierOffsetHz);
+    }
+  }
+
+  // Morse always follows either WAV or RTTTL audio.
   if (!test_mode && !hostMounted) {
-    carrierOffsetHz =
-      getCarrierOffsetHz(*carrierSequenceStep);
+    // Return to an unmodulated carrier for 250 ms before the Morse ID.
+    // The transmitter remains keyed for this entire interval.
+    setFrequencyOffset(carrierOffsetHz);
+    delay(AUDIO_TO_MORSE_GAP_MS);
+    activeLengthMs += AUDIO_TO_MORSE_GAP_MS;
 
+    carrierOffsetHz = getCarrierOffsetHz(*carrierSequenceStep);
     *carrierSequenceStep =
       (*carrierSequenceStep + 1) %
-      (sizeof(CARRIER_OFFSET_SEQUENCE_HZ) /
-       sizeof(CARRIER_OFFSET_SEQUENCE_HZ[0]));
+      (sizeof(CARRIER_OFFSET_SEQUENCE_HZ) / sizeof(CARRIER_OFFSET_SEQUENCE_HZ[0]));
 
     setFrequencyOffset(carrierOffsetHz);
 
-    activeLengthMs +=
-      playAudio(CALLSIGN_WAV, carrierOffsetHz);
+    Serial.print("Morse TX (live): ");
+    Serial.println(settings.callsign);
+
+    activeLengthMs += sendMorseCallsign(carrierOffsetHz);
   }
 
   return activeLengthMs;
@@ -2027,8 +2661,13 @@ void sendRobot36Jpeg(const char* filename, int32_t carrierOffsetHz) {
     return;
   }
 
+  // Build all modulation lookup data with RF off. Once keyed, provide a
+  // consistent 100 ms unmodulated carrier before the Robot36 VIS header.
+  buildSstvPllTable(carrierOffsetHz);
+
   setFrequencyOffset(carrierOffsetHz);
   setSi5351Output(true);
+  delay(TX_KEYUP_DELAY_MS);
 
   Serial.println("Starting Robot36 JPEG transmission.");
 
@@ -2039,7 +2678,6 @@ void sendRobot36Jpeg(const char* filename, int32_t carrierOffsetHz) {
   sstvPhase32 = 0;
   resetSstvTimingStats();
 
-  buildSstvPllTable(carrierOffsetHz);
   sendRobot36VIS(carrierOffsetHz);
 
   for (uint16_t line = 0;
@@ -2179,9 +2817,9 @@ void sendRobot36VIS(int32_t carrierOffsetHz) {
 // -----------------------------------------------------------------------------
 
 void audioTask() {
-  uint8_t attenuationCycleStep = 1;
   uint8_t carrierSequenceStep = 0;
   uint16_t audioSequenceIndex = 0;
+  uint16_t songSequenceIndex = 0;
   uint16_t sstvSequenceIndex = 0;
 
   // When voice is enabled, preserve the normal alternating behavior:
@@ -2202,6 +2840,10 @@ void audioTask() {
     }
 
     uint32_t activeLengthMs = 0;
+
+    // Program the attenuator immediately before every transmission. In RANDOM
+    // mode this selects a new value in the configured inclusive min/max range.
+    selectAttenuationForTransmit();
 
     if (!settings.voiceEnabled) {
       // SSTV-only mode. Never play audio.wav and never send the Morse
@@ -2234,7 +2876,8 @@ void audioTask() {
       activeLengthMs =
         playNextNormalTransmission(
           &carrierSequenceStep,
-          &audioSequenceIndex
+          &audioSequenceIndex,
+          &songSequenceIndex
         );
 
       nextIsSstv =
@@ -2247,10 +2890,7 @@ void audioTask() {
       break;
     }
 
-    applyDutyCycleOff(
-      activeLengthMs,
-      &attenuationCycleStep
-    );
+    applyDutyCycleOff(activeLengthMs);
   }
 }
 
@@ -2294,6 +2934,8 @@ void setup() {
 
   Serial.print("VOICE_ENABLE=");
   Serial.println(settings.voiceEnabled ? 1 : 0);
+  Serial.print("AUDIO_MODE=");
+  Serial.println(settings.audioMode == AUDIO_MODE_RTTTL ? "RTTTL" : "WAV");
   Serial.print("SSTV_ENABLE=");
   Serial.println(settings.sstvEnabled ? 1 : 0);
 
@@ -2360,6 +3002,19 @@ void setup() {
   Serial.print("Revision: ");
   Serial.println(revision);
 
+  // Seed the dedicated RANDOM attenuation PRNG. Mix timing with current
+  // frequency/settings so the starting sequence is not always identical.
+  attenuationRandomState =
+    micros() ^
+    ((uint32_t)(settings.transmitFreqMHz * 1000000.0)) ^
+    ((uint32_t)settings.attenuationMin << 8) ^
+    (uint32_t)settings.attenuationMax ^
+    0xA5C31F27UL;
+
+  if (attenuationRandomState == 0) {
+    attenuationRandomState = 0x6D2B79F5UL;
+  }
+
   pinMode(AMP_EN, OUTPUT);
   digitalWrite(AMP_EN, HIGH);
 
@@ -2414,6 +3069,20 @@ void setup() {
     Serial.println("Si5351 setup complete; RF output held off.");
   }
 
+  Serial.print("Attenuation mode: ");
+  Serial.println(
+    settings.attenuationMode == ATTENUATION_MODE_RANDOM ? "RANDOM" : "FIXED"
+  );
+  if (settings.attenuationMode == ATTENUATION_MODE_RANDOM) {
+    Serial.print("Random attenuation range loaded from settings: ");
+    Serial.print(settings.attenuationMin);
+    Serial.print(" to ");
+    Serial.println(settings.attenuationMax);
+  } else {
+    Serial.print("Fixed attenuation: ");
+    Serial.println(settings.attenuation);
+  }
+
   Serial.print("SSTV enabled: ");
   Serial.println(settings.sstvEnabled ? "yes" : "no");
 
@@ -2445,16 +3114,6 @@ void setup() {
   // built-in Robot36 monochrome diagnostic after the 5-second boot delay.
   // After that, normal operation starts.
   // ---------------------------------------------------------------------------
-  if (settings.sstvEnabled &&
-      settings.sstvMode == SSTV_MODE_ROBOT36 &&
-      settings.isConfigured &&
-      !hostMounted) {
-    setSi5351Output(true);
-    // SSTV transmissions are handled by audioTask().
-    setSi5351Output(false);
-    delay(1000);
-  }
-
   // Existing audio/Morse behavior continues on core 1.
   multicore_launch_core1(audioTask);
 }
