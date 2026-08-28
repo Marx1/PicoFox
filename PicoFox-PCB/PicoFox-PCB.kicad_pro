@@ -76,7 +76,12 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        [
+          "hole_clearance|67716507|114654288|dfc4d432-7272-4d41-8fc6-43c73f8ec0ad|0958cfe3-f2d9-4ffc-8d08-1d30669accf2",
+          ""
+        ]
+      ],
       "meta": {
         "filename": "board_design_settings.json",
         "version": 2
@@ -123,7 +128,7 @@
         "pth_inside_courtyard": "ignore",
         "shorting_items": "error",
         "silk_edge_clearance": "warning",
-        "silk_over_copper": "warning",
+        "silk_over_copper": "ignore",
         "silk_overlap": "ignore",
         "skew_out_of_range": "error",
         "solder_mask_bridge": "error",
@@ -164,7 +169,7 @@
         "min_track_width": 0.09,
         "min_via_annular_width": 0.1,
         "min_via_diameter": 0.45,
-        "solder_mask_to_copper_clearance": 0.0,
+        "solder_mask_to_copper_clearance": 0.005,
         "use_height_for_length_calcs": true
       },
       "teardrop_options": [
@@ -268,7 +273,7 @@
       "internal_id": "",
       "mfg": "",
       "mpn": "",
-      "sch_revision": ""
+      "sch_revision": "REV2"
     },
     "layer_pairs": [],
     "layer_presets": [],
@@ -1010,7 +1015,7 @@
       {
         "filename": "PicoFox-PCB.kicad_sch",
         "name": "PicoFox-PCB",
-        "uuid": "00000000-0000-0000-0000-000000000000"
+        "uuid": "8c0b3d8b-46d3-4173-ab1e-a61765f77d61"
       }
     ],
     "used_designators": "",
@@ -1019,7 +1024,7 @@
   "sheets": [
     [
       "8c0b3d8b-46d3-4173-ab1e-a61765f77d61",
-      "Root"
+      "PicoFox-PCB"
     ]
   ],
   "text_variables": {},
