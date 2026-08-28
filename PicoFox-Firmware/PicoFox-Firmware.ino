@@ -1,5 +1,5 @@
 /*
-  PicoFox - random attenuation debug cleanup v51
+  PicoFox - RTTTL level and APRS restore v56
   Based on PicoFox firmware by Giorgi Enterprises LLC dba AI6YM.radio.
   Original project:
   https://github.com/Marx1/PicoFox
@@ -83,6 +83,30 @@
 
 // Silent keyed-carrier gap between WAV/RTTTL audio and the live Morse ID.
 #define AUDIO_TO_MORSE_GAP_MS 1000UL
+
+// APRS / AX.25 1200-baud Bell 202 AFSK.
+// 60 HDLC flags at 1200 baud provide a 400 ms preamble.
+#define APRS_BAUD 1200UL
+#define APRS_MARK_HZ 1200U
+#define APRS_SPACE_HZ 2200U
+#define APRS_PREAMBLE_FLAGS 60U
+#define APRS_POSTAMBLE_FLAGS 3U
+#define APRS_TONE_AMPLITUDE_PERCENT 60U
+
+// RTTTL tone modulation level. Keep this below full-scale to reduce
+// over-deviation/distortion on higher-pitched notes.
+#define RTTTL_TONE_AMPLITUDE_PERCENT 65U
+#define APRS_MAX_MESSAGE_LEN 67U
+
+// Always leave at least this much RF-off time after an APRS packet before
+// another transmission begins. The duty-cycle off time may make it longer.
+#define APRS_POST_TX_GAP_MS 1000UL
+
+// Duty-cycle timing is based on the average RF-on time of recent
+// transmissions, then the same calculated OFF time is applied after every
+// transmission mode. A rolling window lets the average adapt if song lengths
+// or enabled modes change.
+#define DUTY_AVERAGE_WINDOW 12U
 #define SSTV_FM_DEVIATION_HZ 3000
 
 #define SI5351_PLL SI5351_PLLA
@@ -129,7 +153,7 @@
 #define SI5351_REF_FREQ_X100 2500000000ULL
 
 #define SSTV_MODE_ROBOT36 36
-#define PICOFOX_FIRMWARE_VERSION "v51"
+#define PICOFOX_FIRMWARE_VERSION "v56"
 #define AUDIO_MODE_WAV 0
 #define AUDIO_MODE_RTTTL 1
 
@@ -194,6 +218,7 @@ const char SSTV_JPEG_EXT[] = ".jpg";
 const char AUDIO_SEQUENCE_PREFIX[] = "audio";
 const char AUDIO_SEQUENCE_EXT[] = ".wav";
 const char SONGS_TXT[] = "songs.txt";
+const char APRS_MESSAGES_TXT[] = "messages.txt";
 #define FILE_SEQUENCE_MAX 999U
 
 #define SSTV_IMAGE_WIDTH 320
@@ -223,6 +248,7 @@ const uint8_t DEFAULT_ATTENUATION = 0;
 const uint8_t DEFAULT_ATTENUATION_MODE = ATTENUATION_MODE_FIXED;
 const uint8_t DEFAULT_ATTENUATION_MIN = 0;
 const uint8_t DEFAULT_ATTENUATION_MAX = 127;
+const bool DEFAULT_APRS_ENABLE = false;
 
 // Built-in fallback tune. Replaces the old embedded PCM audio.h waveform.
 const char DEFAULT_RTTTL[] =
@@ -286,6 +312,9 @@ struct Settings {
   // SSTV configuration.
   bool sstvEnabled;
   uint8_t sstvMode;
+
+  // APRS message configuration.
+  bool aprsEnabled;
 };
 
 Settings settings = {
@@ -304,7 +333,8 @@ Settings settings = {
   .voiceEnabled = DEFAULT_VOICE_ENABLE,
   .audioMode = DEFAULT_AUDIO_MODE,
   .sstvEnabled = DEFAULT_SSTV_ENABLE,
-  .sstvMode = DEFAULT_SSTV_MODE
+  .sstvMode = DEFAULT_SSTV_MODE,
+  .aprsEnabled = DEFAULT_APRS_ENABLE
 };
 
 
@@ -341,6 +371,12 @@ uint32_t audioPllWriteErrors = 0;
 uint8_t lastRandomAttenuation = 0xFF;
 uint32_t attenuationRandomState = 0x6D2B79F5UL;
 
+// Recent actual RF-on durations used for duty-cycle averaging.
+uint32_t dutyTxHistory[DUTY_AVERAGE_WINDOW] = {0};
+uint8_t dutyTxHistoryCount = 0;
+uint8_t dutyTxHistoryIndex = 0;
+uint64_t dutyTxHistorySum = 0;
+
 // -----------------------------------------------------------------------------
 // Forward declarations
 // -----------------------------------------------------------------------------
@@ -372,6 +408,8 @@ uint16_t getSstvPixelSafe(uint16_t x, uint16_t line);
 bool flashFileExists(const char* filename);
 void ensureSongsFilePresent();
 bool getNextRtttlSong(uint16_t* songIndex, String* outSong);
+void ensureAprsMessagesFilePresent();
+bool getNextAprsMessage(uint16_t* messageIndex, String* outMessage);
 bool readFatFileLine(FatFile* f, String* outLine);
 bool nextSequencedFile(const char* prefix,
                        const char* extension,
@@ -383,7 +421,21 @@ uint32_t playNextNormalTransmission(uint8_t* carrierSequenceStep,
                                     uint16_t* songSequenceIndex);
 uint32_t sendNextSstvTransmission(uint8_t* carrierSequenceStep,
                                   uint16_t* sstvSequenceIndex);
-void applyDutyCycleOff(uint32_t activeLengthMs);
+uint32_t sendNextAprsTransmission(uint8_t* carrierSequenceStep,
+                                  uint16_t* messageIndex);
+bool parseAx25Callsign(const char* text, char call[7], uint8_t* ssid, char display[10]);
+void encodeAx25Address(uint8_t out[7], const char* call, uint8_t ssid, bool last);
+uint16_t ax25FcsUpdate(uint16_t crc, uint8_t data);
+void aprsSendNrziBit(uint8_t bit, bool* toneMark, uint32_t* sampleRemainder,
+                     uint32_t* nextDeadlineUs, uint32_t* samplesSent);
+void aprsSendFlag(bool* toneMark, uint32_t* sampleRemainder,
+                  uint32_t* nextDeadlineUs, uint32_t* samplesSent);
+void aprsSendStuffedByte(uint8_t value, uint8_t* onesCount, bool* toneMark,
+                         uint32_t* sampleRemainder, uint32_t* nextDeadlineUs,
+                         uint32_t* samplesSent);
+uint32_t sendAprsMessage(const char* message, int32_t carrierOffsetHz);
+uint32_t updateAverageTxTime(uint32_t activeLengthMs);
+void applyDutyCycleOff(uint32_t activeLengthMs, uint32_t minimumOffMs = 0);
 bool loadRobot36Jpeg(const char* filename);
 void* jpegOpenCallback(const char* filename, int32_t* fileSize);
 void jpegCloseCallback(void* handle);
@@ -519,7 +571,10 @@ void saveDefaultSettings() {
     "SSTV_ENABLE=%u\n"
     "\n"
     "# SSTV encoding mode. Currently ONLY ROBOT36 is supported.\n"
-    "SSTV_MODE=ROBOT36\n",
+    "SSTV_MODE=ROBOT36\n"
+    "\n"
+    "# Enables APRS message transmissions. 1=enabled, 0=disabled. Messages are read from messages.txt.\n"
+    "APRS_ENABLE=%u\n",
     DEFAULT_CALLSIGN,
     DEFAULT_ITU_ZONE,
     DEFAULT_FREQ_MHZ,
@@ -531,7 +586,8 @@ void saveDefaultSettings() {
     DEFAULT_MORSE_TONE_HZ,
     DEFAULT_TONE_AMPLITUDE_PERCENT,
     DEFAULT_VOICE_ENABLE ? 1 : 0,
-    DEFAULT_SSTV_ENABLE ? 1 : 0
+    DEFAULT_SSTV_ENABLE ? 1 : 0,
+    DEFAULT_APRS_ENABLE ? 1 : 0
   );
 
   if (!file.open(&root, SETTINGS_TXT, O_RDWR | O_CREAT | O_TRUNC)) {
@@ -560,6 +616,7 @@ void ensureSstvSettingsPresent() {
   bool haveAttenuationMax = false;
   bool haveEnable = false;
   bool haveMode = false;
+  bool haveAprsEnable = false;
   String line = "";
 
   int c;
@@ -589,6 +646,8 @@ void ensureSstvSettingsPresent() {
         haveEnable = true;
       } else if (check.startsWith("SSTV_MODE=")) {
         haveMode = true;
+      } else if (check.startsWith("APRS_ENABLE=")) {
+        haveAprsEnable = true;
       }
 
       line = "";
@@ -616,12 +675,14 @@ void ensureSstvSettingsPresent() {
       haveEnable = true;
     } else if (check.startsWith("SSTV_MODE=")) {
       haveMode = true;
+    } else if (check.startsWith("APRS_ENABLE=")) {
+      haveAprsEnable = true;
     }
   }
 
   file.close();
 
-  if (!haveVoiceEnable || !haveAudioMode || !haveAttenuationMode || !haveAttenuationMin || !haveAttenuationMax || !haveEnable || !haveMode) {
+  if (!haveVoiceEnable || !haveAudioMode || !haveAttenuationMode || !haveAttenuationMin || !haveAttenuationMax || !haveEnable || !haveMode || !haveAprsEnable) {
     if (file.open(&root, SETTINGS_TXT, O_RDWR | O_AT_END)) {
       // Ensure appended keys begin on a fresh line even if the old file did
       // not end with a newline.
@@ -665,6 +726,13 @@ void ensureSstvSettingsPresent() {
       if (!haveMode) {
         const char modeLine[] = "SSTV_MODE=ROBOT36\n";
         file.write(modeLine, sizeof(modeLine) - 1);
+      }
+
+      if (!haveAprsEnable) {
+        const char aprsLine[] =
+          "# Enables APRS message transmissions. 1=enabled, 0=disabled. Messages are read from messages.txt.\n"
+          "APRS_ENABLE=0\n";
+        file.write(aprsLine, sizeof(aprsLine) - 1);
       }
 
       file.close();
@@ -754,6 +822,80 @@ bool getNextRtttlSong(uint16_t* songIndex, String* outSong) {
   return false;
 }
 
+
+void ensureAprsMessagesFilePresent() {
+  if (!openRoot()) return;
+
+  if (!root.exists(APRS_MESSAGES_TXT)) {
+    if (file.open(&root, APRS_MESSAGES_TXT, O_RDWR | O_CREAT | O_TRUNC)) {
+      const char defaultMessage[] = "PicoFox APRS beacon\n";
+      file.write((const uint8_t*)defaultMessage, sizeof(defaultMessage) - 1);
+      file.close();
+      Serial.println("Created messages.txt with a default APRS message.");
+    }
+  }
+
+  closeRoot();
+}
+
+bool getNextAprsMessage(uint16_t* messageIndex, String* outMessage) {
+  if (!messageIndex || !outMessage || hostMounted) return false;
+
+  filesystemBusy = true;
+
+  if (!openRoot()) {
+    filesystemBusy = false;
+    return false;
+  }
+
+  if (!file.open(&root, APRS_MESSAGES_TXT, O_RDONLY)) {
+    closeRoot();
+    filesystemBusy = false;
+    return false;
+  }
+
+  uint16_t n = 0;
+  String line;
+
+  while (file.available()) {
+    if (!readFatFileLine(&file, &line)) break;
+    line.trim();
+    if (!line.length() || line[0] == '#') continue;
+
+    if (n == *messageIndex) {
+      if (line.length() > APRS_MAX_MESSAGE_LEN) line.remove(APRS_MAX_MESSAGE_LEN);
+      *outMessage = line;
+      (*messageIndex)++;
+      file.close();
+      closeRoot();
+      filesystemBusy = false;
+      return true;
+    }
+    n++;
+  }
+
+  file.rewind();
+
+  while (file.available()) {
+    if (!readFatFileLine(&file, &line)) break;
+    line.trim();
+    if (!line.length() || line[0] == '#') continue;
+
+    if (line.length() > APRS_MAX_MESSAGE_LEN) line.remove(APRS_MAX_MESSAGE_LEN);
+    *outMessage = line;
+    *messageIndex = 1;
+    file.close();
+    closeRoot();
+    filesystemBusy = false;
+    return true;
+  }
+
+  file.close();
+  closeRoot();
+  filesystemBusy = false;
+  return false;
+}
+
 void flashCleanup() {
   if (!openRoot()) {
     Serial.println("Failed to open root filesystem.");
@@ -771,10 +913,11 @@ void flashCleanup() {
 
   closeRoot();
 
-  // Existing PicoFox installations already have settings.txt, so add the new
-  // stage-2 keys without destroying the user's current configuration.
+  // Add any missing keys before loading. After loadSettings(), the file is
+  // rewritten in the current documented format with the loaded values.
   ensureSstvSettingsPresent();
   ensureSongsFilePresent();
+  ensureAprsMessagesFilePresent();
 }
 
 void loadSettings() {
@@ -847,6 +990,8 @@ void loadSettings() {
           if (val == "ROBOT36" || val == "36") {
             settings.sstvMode = SSTV_MODE_ROBOT36;
           }
+        } else if (key == "APRS_ENABLE") {
+          settings.aprsEnabled = (val.toInt() != 0);
         }
       }
 
@@ -888,6 +1033,8 @@ void loadSettings() {
         if (val == "ROBOT36" || val == "36") {
           settings.sstvMode = SSTV_MODE_ROBOT36;
         }
+      } else if (key == "APRS_ENABLE") {
+        settings.aprsEnabled = (val.toInt() != 0);
       }
     }
   }
@@ -953,30 +1100,11 @@ void loadSettings() {
 }
 
 void ensureSettingsComments() {
+  // Rewrite settings.txt from the values that loadSettings() already parsed.
+  // This keeps existing user settings while guaranteeing that new firmware
+  // options are added to older configuration files in the normal documented
+  // order. There is intentionally no header in settings.txt.
   if (!openRoot()) {
-    return;
-  }
-
-  if (!file.open(&root, SETTINGS_TXT, O_RDONLY)) {
-    closeRoot();
-    return;
-  }
-
-  bool currentComments = false;
-  String line;
-
-  while (readFatFileLine(&file, &line)) {
-    line.trim();
-    if (line == "# Alphanumeric callsign, maximum 12 characters.") {
-      currentComments = true;
-      break;
-    }
-  }
-
-  file.close();
-
-  if (currentComments) {
-    closeRoot();
     return;
   }
 
@@ -1037,7 +1165,11 @@ void ensureSettingsComments() {
     "SSTV_ENABLE=%u\n"
     "\n"
     "# SSTV encoding mode. Currently ONLY ROBOT36 is supported.\n"
-    "SSTV_MODE=ROBOT36\n",
+    "SSTV_MODE=ROBOT36\n"
+    "\n"
+    "# Enables APRS message transmissions. 1=enabled, 0=disabled.\n"
+    "# Messages are read from messages.txt, one message per line.\n"
+    "APRS_ENABLE=%u\n",
     settings.callsign,
     settings.ituZone,
     settings.transmitFreqMHz,
@@ -1051,13 +1183,16 @@ void ensureSettingsComments() {
     settings.toneAmplitudePercent,
     settings.voiceEnabled ? 1 : 0,
     settings.audioMode == AUDIO_MODE_RTTTL ? "RTTTL" : "WAV",
-    settings.sstvEnabled ? 1 : 0
+    settings.sstvEnabled ? 1 : 0,
+    settings.aprsEnabled ? 1 : 0
   );
 
   if (file.open(&root, SETTINGS_TXT, O_RDWR | O_CREAT | O_TRUNC)) {
     file.write(buffer, strlen(buffer));
     file.close();
-    Serial.println("Updated settings.txt with configuration comments.");
+    Serial.println("settings.txt updated for current firmware options.");
+  } else {
+    Serial.println("Failed to update settings.txt.");
   }
 
   closeRoot();
@@ -1714,7 +1849,11 @@ uint32_t playRtttl(const char* rtttl, int32_t carrierOffsetHz) {
       totalMs += durationUs / 1000UL;
     } else {
       uint16_t toneHz = rtttlNoteFrequency((uint8_t)semitone, octave);
-      totalMs += sendAudioTone(toneHz, durationUs, 100);
+      totalMs += sendAudioTone(
+        toneHz,
+        durationUs,
+        RTTTL_TONE_AMPLITUDE_PERCENT
+      );
     }
 
     while (*p && *p != ',') p++;
@@ -2215,26 +2354,316 @@ bool nextSequencedFile(const char* prefix,
   return true;
 }
 
-void applyDutyCycleOff(uint32_t activeLengthMs) {
-  if (settings.dutyCyclePercent >= 100 ||
-      settings.dutyCyclePercent == 0 ||
-      activeLengthMs == 0) {
-    return;
+
+bool parseAx25Callsign(const char* text,
+                       char call[7],
+                       uint8_t* ssid,
+                       char display[10]) {
+  if (!text || !call || !ssid || !display) return false;
+
+  char temp[13];
+  strncpy(temp, text, sizeof(temp) - 1);
+  temp[sizeof(temp) - 1] = '\0';
+
+  for (size_t i = 0; temp[i]; i++) {
+    temp[i] = (char)toupper((unsigned char)temp[i]);
   }
 
-  uint32_t offTime =
-    (uint32_t)(
-      ((uint64_t)activeLengthMs *
-       (100U - settings.dutyCyclePercent)) /
-      settings.dutyCyclePercent
-    );
+  char* dash = strchr(temp, '-');
+  *ssid = 0;
+
+  if (dash) {
+    *dash = '\0';
+    const char* s = dash + 1;
+    if (!*s) return false;
+
+    int value = atoi(s);
+    if (value < 0 || value > 15) return false;
+    *ssid = (uint8_t)value;
+  }
+
+  size_t len = strlen(temp);
+  if (len < 1 || len > 6) return false;
+
+  for (size_t i = 0; i < len; i++) {
+    if (!isalnum((unsigned char)temp[i])) return false;
+  }
+
+  memset(call, 0, 7);
+  strncpy(call, temp, 6);
+
+  if (*ssid) snprintf(display, 10, "%s-%u", call, *ssid);
+  else snprintf(display, 10, "%s", call);
+
+  return strlen(display) <= 9;
+}
+
+void encodeAx25Address(uint8_t out[7],
+                       const char* call,
+                       uint8_t ssid,
+                       bool last) {
+  for (uint8_t i = 0; i < 6; i++) {
+    char c = ' ';
+    if (call && call[i]) c = call[i];
+    out[i] = ((uint8_t)c) << 1;
+  }
+
+  out[6] = 0x60U | ((ssid & 0x0FU) << 1) | (last ? 0x01U : 0x00U);
+}
+
+uint16_t ax25FcsUpdate(uint16_t crc, uint8_t data) {
+  crc ^= data;
+  for (uint8_t i = 0; i < 8; i++) {
+    crc = (crc & 1U) ? ((crc >> 1) ^ 0x8408U) : (crc >> 1);
+  }
+  return crc;
+}
+
+void aprsSendNrziBit(uint8_t bit,
+                     bool* toneMark,
+                     uint32_t* sampleRemainder,
+                     uint32_t* nextDeadlineUs,
+                     uint32_t* samplesSent) {
+  if (!bit) *toneMark = !*toneMark;
+
+  uint16_t toneHz = *toneMark ? APRS_MARK_HZ : APRS_SPACE_HZ;
+  uint32_t phaseIncrement = audioPhaseIncrementForTone(toneHz);
+
+  *sampleRemainder += AUDIO_SAMPLE_RATE_HZ;
+  uint32_t samplesThisBit = *sampleRemainder / APRS_BAUD;
+  *sampleRemainder %= APRS_BAUD;
+  if (samplesThisBit < 1) samplesThisBit = 1;
+
+  for (uint32_t i = 0; i < samplesThisBit; i++) {
+    if (hostMounted) return;
+
+    uint8_t sineIndex = (uint8_t)(audioPhase32 >> 24);
+    writeAudioPllEntry(audioSinePllIndex[sineIndex]);
+    audioPhase32 += phaseIncrement;
+
+    *nextDeadlineUs += AUDIO_SAMPLE_PERIOD_US;
+    uint32_t nowUs = micros();
+    if (timeBeforeAudioUs(nowUs, *nextDeadlineUs)) {
+      waitForAudioDeadline(*nextDeadlineUs);
+    }
+    (*samplesSent)++;
+  }
+}
+
+void aprsSendFlag(bool* toneMark,
+                  uint32_t* sampleRemainder,
+                  uint32_t* nextDeadlineUs,
+                  uint32_t* samplesSent) {
+  const uint8_t flag = 0x7E;
+  for (uint8_t bit = 0; bit < 8; bit++) {
+    aprsSendNrziBit((flag >> bit) & 1U,
+                    toneMark, sampleRemainder, nextDeadlineUs, samplesSent);
+  }
+}
+
+void aprsSendStuffedByte(uint8_t value,
+                         uint8_t* onesCount,
+                         bool* toneMark,
+                         uint32_t* sampleRemainder,
+                         uint32_t* nextDeadlineUs,
+                         uint32_t* samplesSent) {
+  for (uint8_t bit = 0; bit < 8; bit++) {
+    uint8_t b = (value >> bit) & 1U;
+    aprsSendNrziBit(b, toneMark, sampleRemainder, nextDeadlineUs, samplesSent);
+
+    if (b) {
+      (*onesCount)++;
+      if (*onesCount == 5) {
+        aprsSendNrziBit(0, toneMark, sampleRemainder, nextDeadlineUs, samplesSent);
+        *onesCount = 0;
+      }
+    } else {
+      *onesCount = 0;
+    }
+  }
+}
+
+uint32_t sendAprsMessage(const char* message, int32_t carrierOffsetHz) {
+  if (!message || !*message || hostMounted) return 0;
+
+  char sourceCall[7];
+  uint8_t sourceSsid = 0;
+  char sourceDisplay[10];
+
+  if (!parseAx25Callsign(settings.callsign,
+                         sourceCall,
+                         &sourceSsid,
+                         sourceDisplay)) {
+    Serial.println("APRS TX skipped: CALLSIGN must be 1-6 alphanumeric characters with optional SSID 0-15.");
+    return 0;
+  }
+
+  char addressee[10];
+  memset(addressee, ' ', 9);
+  addressee[9] = '\0';
+
+  size_t sourceDisplayLen = strlen(sourceDisplay);
+  if (sourceDisplayLen > 9) sourceDisplayLen = 9;
+  memcpy(addressee, sourceDisplay, sourceDisplayLen);
+
+  char info[96];
+  snprintf(info, sizeof(info), ":%s:%.*s",
+           addressee, (int)APRS_MAX_MESSAGE_LEN, message);
+
+  uint8_t frame[128];
+  size_t frameLen = 0;
+  uint8_t address[7];
+
+  // Direct APRS frame: destination + source only, no digipeater addresses.
+  encodeAx25Address(address, "APRS", 0, false);
+  memcpy(frame + frameLen, address, 7);
+  frameLen += 7;
+
+  encodeAx25Address(address, sourceCall, sourceSsid, true);
+  memcpy(frame + frameLen, address, 7);
+  frameLen += 7;
+
+  frame[frameLen++] = 0x03;
+  frame[frameLen++] = 0xF0;
+
+  size_t infoLen = strlen(info);
+  if (infoLen > sizeof(frame) - frameLen - 2) {
+    infoLen = sizeof(frame) - frameLen - 2;
+  }
+  memcpy(frame + frameLen, info, infoLen);
+  frameLen += infoLen;
+
+  uint16_t crc = 0xFFFFU;
+  for (size_t i = 0; i < frameLen; i++) crc = ax25FcsUpdate(crc, frame[i]);
+  crc ^= 0xFFFFU;
+
+  frame[frameLen++] = (uint8_t)(crc & 0xFFU);
+  frame[frameLen++] = (uint8_t)(crc >> 8);
+
+  buildAudioPllTable(carrierOffsetHz);
+  buildAudioSineTable(APRS_TONE_AMPLITUDE_PERCENT);
+  audioPhase32 = 0;
+
+  setFrequencyOffset(carrierOffsetHz);
+  setSi5351Output(true);
+  delay(TX_KEYUP_DELAY_MS);
+
+  Serial.print("APRS TX to ");
+  Serial.print(sourceDisplay);
+  Serial.print(": ");
+  Serial.println(message);
+  Serial.println("APRS path: DIRECT");
+
+  bool toneMark = true;
+  uint32_t sampleRemainder = 0;
+  uint32_t nextDeadlineUs = micros();
+  uint32_t samplesSent = 0;
+
+  for (uint16_t i = 0; i < APRS_PREAMBLE_FLAGS && !hostMounted; i++) {
+    aprsSendFlag(&toneMark, &sampleRemainder, &nextDeadlineUs, &samplesSent);
+  }
+
+  uint8_t onesCount = 0;
+  for (size_t i = 0; i < frameLen && !hostMounted; i++) {
+    aprsSendStuffedByte(frame[i], &onesCount, &toneMark,
+                        &sampleRemainder, &nextDeadlineUs, &samplesSent);
+  }
+
+  for (uint8_t i = 0; i < APRS_POSTAMBLE_FLAGS && !hostMounted; i++) {
+    aprsSendFlag(&toneMark, &sampleRemainder, &nextDeadlineUs, &samplesSent);
+  }
+
+  // Return the PLL to the unmodulated carrier before unkeying so the next
+  // transmission always starts from a known center-frequency state.
+  setFrequencyOffset(carrierOffsetHz);
+  setSi5351Output(false);
+
+  uint32_t packetMs =
+    (uint32_t)(((uint64_t)samplesSent * 1000ULL) / AUDIO_SAMPLE_RATE_HZ);
+
+  return TX_KEYUP_DELAY_MS + packetMs;
+}
+
+uint32_t sendNextAprsTransmission(uint8_t* carrierSequenceStep,
+                                  uint16_t* messageIndex) {
+  if (!carrierSequenceStep || !messageIndex || hostMounted) return 0;
+
+  String message;
+  if (!getNextAprsMessage(messageIndex, &message)) {
+    Serial.println("APRS TX skipped: messages.txt has no valid messages.");
+    return 0;
+  }
+
+  int32_t carrierOffsetHz = getCarrierOffsetHz(*carrierSequenceStep);
+  *carrierSequenceStep =
+    (*carrierSequenceStep + 1) %
+    (sizeof(CARRIER_OFFSET_SEQUENCE_HZ) /
+     sizeof(CARRIER_OFFSET_SEQUENCE_HZ[0]));
+
+  return sendAprsMessage(message.c_str(), carrierOffsetHz);
+}
+
+uint32_t updateAverageTxTime(uint32_t activeLengthMs) {
+  if (activeLengthMs == 0) {
+    if (dutyTxHistoryCount == 0) return 0;
+    return (uint32_t)(dutyTxHistorySum / dutyTxHistoryCount);
+  }
+
+  if (dutyTxHistoryCount < DUTY_AVERAGE_WINDOW) {
+    dutyTxHistory[dutyTxHistoryIndex] = activeLengthMs;
+    dutyTxHistorySum += activeLengthMs;
+    dutyTxHistoryCount++;
+  } else {
+    dutyTxHistorySum -= dutyTxHistory[dutyTxHistoryIndex];
+    dutyTxHistory[dutyTxHistoryIndex] = activeLengthMs;
+    dutyTxHistorySum += activeLengthMs;
+  }
+
+  dutyTxHistoryIndex =
+    (uint8_t)((dutyTxHistoryIndex + 1U) % DUTY_AVERAGE_WINDOW);
+
+  return (uint32_t)(dutyTxHistorySum / dutyTxHistoryCount);
+}
+
+void applyDutyCycleOff(uint32_t activeLengthMs,
+                       uint32_t minimumOffMs) {
+  // Add this transmission's actual RF-on duration to the rolling history.
+  // The resulting average is then used for ALL modes, so a short APRS packet,
+  // long SSTV frame, and variable-length audio/RTTTL transmission all receive
+  // the same duty-cycle OFF time once they are part of the running average.
+  uint32_t averageTxMs = updateAverageTxTime(activeLengthMs);
+
+  uint32_t offTime = 0;
+
+  if (settings.dutyCyclePercent > 0 &&
+      settings.dutyCyclePercent < 100 &&
+      averageTxMs > 0) {
+    offTime =
+      (uint32_t)(
+        ((uint64_t)averageTxMs *
+         (100U - settings.dutyCyclePercent)) /
+        settings.dutyCyclePercent
+      );
+  }
+
+  // APRS retains its minimum one-second quiet period. If the average-based
+  // duty-cycle delay is longer, use that instead of adding both delays.
+  if (offTime < minimumOffMs) {
+    offTime = minimumOffMs;
+  }
 
   setSi5351Output(false);
+
+  if (offTime == 0) {
+    return;
+  }
 
   Serial.print("Duty cycle: ");
   Serial.print(settings.dutyCyclePercent);
   Serial.print("%, TX=");
   Serial.print(activeLengthMs);
+  Serial.print(" ms, AVG TX=");
+  Serial.print(averageTxMs);
   Serial.print(" ms, OFF=");
   Serial.print(offTime);
   Serial.println(" ms");
@@ -2821,10 +3250,11 @@ void audioTask() {
   uint16_t audioSequenceIndex = 0;
   uint16_t songSequenceIndex = 0;
   uint16_t sstvSequenceIndex = 0;
+  uint16_t aprsMessageIndex = 0;
 
-  // When voice is enabled, preserve the normal alternating behavior:
-  // NORMAL -> SSTV -> NORMAL -> SSTV ...
-  bool nextIsSstv = false;
+  // Round-robin scheduler: NORMAL -> SSTV -> APRS -> repeat.
+  // Disabled modes are skipped.
+  uint8_t nextMode = 0;
 
   while (true) {
     if (hostMounted) {
@@ -2832,57 +3262,58 @@ void audioTask() {
       break;
     }
 
-    if (!settings.isConfigured ||
-        settings.dutyCyclePercent == 0) {
+    if (!settings.isConfigured || settings.dutyCyclePercent == 0) {
+      setSi5351Output(false);
+      delay(1000);
+      continue;
+    }
+
+    bool normalEnabled = settings.voiceEnabled;
+    bool sstvEnabled =
+      settings.sstvEnabled && settings.sstvMode == SSTV_MODE_ROBOT36;
+    bool aprsEnabled = settings.aprsEnabled;
+
+    if (!normalEnabled && !sstvEnabled && !aprsEnabled) {
       setSi5351Output(false);
       delay(1000);
       continue;
     }
 
     uint32_t activeLengthMs = 0;
+    bool transmitted = false;
+    bool transmittedAprs = false;
 
-    // Program the attenuator immediately before every transmission. In RANDOM
-    // mode this selects a new value in the configured inclusive min/max range.
-    selectAttenuationForTransmit();
+    for (uint8_t tries = 0; tries < 3 && !transmitted; tries++) {
+      uint8_t mode = nextMode;
+      nextMode = (nextMode + 1U) % 3U;
 
-    if (!settings.voiceEnabled) {
-      // SSTV-only mode. Never play audio.wav and never send the Morse
-      // callsign. SSTV files continue to cycle normally.
-      if (settings.sstvEnabled &&
-          settings.sstvMode == SSTV_MODE_ROBOT36) {
+      if (mode == 0 && normalEnabled) {
+        selectAttenuationForTransmit();
+        activeLengthMs =
+          playNextNormalTransmission(
+            &carrierSequenceStep,
+            &audioSequenceIndex,
+            &songSequenceIndex
+          );
+        transmitted = activeLengthMs > 0;
+      } else if (mode == 1 && sstvEnabled) {
+        selectAttenuationForTransmit();
         activeLengthMs =
           sendNextSstvTransmission(
             &carrierSequenceStep,
             &sstvSequenceIndex
           );
-      } else {
-        // Both normal voice/Morse and SSTV are disabled.
-        setSi5351Output(false);
-        delay(1000);
-        continue;
+        transmitted = activeLengthMs > 0;
+      } else if (mode == 2 && aprsEnabled) {
+        selectAttenuationForTransmit();
+        activeLengthMs =
+          sendNextAprsTransmission(
+            &carrierSequenceStep,
+            &aprsMessageIndex
+          );
+        transmitted = activeLengthMs > 0;
+        transmittedAprs = transmitted;
       }
-    } else if (settings.sstvEnabled &&
-               settings.sstvMode == SSTV_MODE_ROBOT36 &&
-               nextIsSstv) {
-
-      activeLengthMs =
-        sendNextSstvTransmission(
-          &carrierSequenceStep,
-          &sstvSequenceIndex
-        );
-
-      nextIsSstv = false;
-    } else {
-      activeLengthMs =
-        playNextNormalTransmission(
-          &carrierSequenceStep,
-          &audioSequenceIndex,
-          &songSequenceIndex
-        );
-
-      nextIsSstv =
-        settings.sstvEnabled &&
-        settings.sstvMode == SSTV_MODE_ROBOT36;
     }
 
     if (hostMounted) {
@@ -2890,7 +3321,16 @@ void audioTask() {
       break;
     }
 
-    applyDutyCycleOff(activeLengthMs);
+    if (!transmitted) {
+      setSi5351Output(false);
+      delay(1000);
+      continue;
+    }
+
+    applyDutyCycleOff(
+      activeLengthMs,
+      transmittedAprs ? APRS_POST_TX_GAP_MS : 0
+    );
   }
 }
 
@@ -3085,6 +3525,9 @@ void setup() {
 
   Serial.print("SSTV enabled: ");
   Serial.println(settings.sstvEnabled ? "yes" : "no");
+
+  Serial.print("APRS enabled: ");
+  Serial.println(settings.aprsEnabled ? "yes" : "no");
 
   Serial.print("SSTV mode: ");
   Serial.println(
