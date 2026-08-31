@@ -1,5 +1,5 @@
 /*
-  PicoFox - RTTTL level and APRS restore v56
+  PicoFox - configurable frequency shifting v57
   Based on PicoFox firmware by Giorgi Enterprises LLC dba AI6YM.radio.
   Original project:
   https://github.com/Marx1/PicoFox
@@ -95,7 +95,7 @@
 
 // RTTTL tone modulation level. Keep this below full-scale to reduce
 // over-deviation/distortion on higher-pitched notes.
-#define RTTTL_TONE_AMPLITUDE_PERCENT 65U
+#define RTTTL_TONE_AMPLITUDE_PERCENT 60U
 #define APRS_MAX_MESSAGE_LEN 67U
 
 // Always leave at least this much RF-off time after an APRS packet before
@@ -153,7 +153,7 @@
 #define SI5351_REF_FREQ_X100 2500000000ULL
 
 #define SSTV_MODE_ROBOT36 36
-#define PICOFOX_FIRMWARE_VERSION "v56"
+#define PICOFOX_FIRMWARE_VERSION "v60"
 #define AUDIO_MODE_WAV 0
 #define AUDIO_MODE_RTTTL 1
 
@@ -243,12 +243,13 @@ const double DEFAULT_FREQ_MHZ = 146.565;
 const uint8_t DEFAULT_DUTY_CYCLE = 100;
 const uint8_t DEFAULT_WPM = 15;
 const uint16_t DEFAULT_MORSE_TONE_HZ = 600;
-const uint8_t DEFAULT_TONE_AMPLITUDE_PERCENT = 70;
+const uint8_t DEFAULT_TONE_AMPLITUDE_PERCENT = 60;
 const uint8_t DEFAULT_ATTENUATION = 0;
 const uint8_t DEFAULT_ATTENUATION_MODE = ATTENUATION_MODE_FIXED;
 const uint8_t DEFAULT_ATTENUATION_MIN = 0;
 const uint8_t DEFAULT_ATTENUATION_MAX = 127;
 const bool DEFAULT_APRS_ENABLE = false;
+const bool DEFAULT_FREQUENCY_SHIFTING = true;
 
 // Built-in fallback tune. Replaces the old embedded PCM audio.h waveform.
 const char DEFAULT_RTTTL[] =
@@ -308,6 +309,7 @@ struct Settings {
   // Set VOICE_ENABLE=0 for SSTV-only operation.
   bool voiceEnabled;
   uint8_t audioMode;
+  bool frequencyShiftingEnabled;
 
   // SSTV configuration.
   bool sstvEnabled;
@@ -332,6 +334,7 @@ Settings settings = {
   .attenuationMax = DEFAULT_ATTENUATION_MAX,
   .voiceEnabled = DEFAULT_VOICE_ENABLE,
   .audioMode = DEFAULT_AUDIO_MODE,
+  .frequencyShiftingEnabled = DEFAULT_FREQUENCY_SHIFTING,
   .sstvEnabled = DEFAULT_SSTV_ENABLE,
   .sstvMode = DEFAULT_SSTV_MODE,
   .aprsEnabled = DEFAULT_APRS_ENABLE
@@ -546,7 +549,7 @@ void saveDefaultSettings() {
     "# ATTENUATION_MAX must be greater than ATTENUATION_MIN.\n"
     "ATTENUATION_MAX=%u\n"
     "\n"
-    "# Morse ID speed in words per minute.\n"
+    "# Morse ID speed in words per minute. Valid range: 1 to 60 WPM.\n"
     "MORSE_WPM=%u\n"
     "\n"
     "# Morse tone frequency in Hz. Valid range: 100 to 2000 Hz.\n"
@@ -565,6 +568,10 @@ void saveDefaultSettings() {
     "# https://1j01.github.io/rtttl.js/\n"
     "# https://github.com/neverfa11ing/FlipperMusicRTTTL\n"
     "AUDIO_MODE=WAV\n"
+    "\n"
+    "# Enables Frequency Shifting for Voice/WAV/RTTTL transmissions only. 1=enabled, 0=disabled.\n"
+    "# This setting never affects SSTV or APRS.\n"
+    "FREQUENCY_SHIFTING=1\n"
     "\n"
     "# Enables SSTV mode. 1=enabled, 0=disabled.\n"
     "# You MUST set DUTY_CYCLE to less than 80 for SSTV mode to work correctly.\n"
@@ -586,6 +593,7 @@ void saveDefaultSettings() {
     DEFAULT_MORSE_TONE_HZ,
     DEFAULT_TONE_AMPLITUDE_PERCENT,
     DEFAULT_VOICE_ENABLE ? 1 : 0,
+    DEFAULT_FREQUENCY_SHIFTING ? 1 : 0,
     DEFAULT_SSTV_ENABLE ? 1 : 0,
     DEFAULT_APRS_ENABLE ? 1 : 0
   );
@@ -611,6 +619,7 @@ void ensureSstvSettingsPresent() {
 
   bool haveVoiceEnable = false;
   bool haveAudioMode = false;
+  bool haveFrequencyShifting = false;
   bool haveAttenuationMode = false;
   bool haveAttenuationMin = false;
   bool haveAttenuationMax = false;
@@ -636,6 +645,8 @@ void ensureSstvSettingsPresent() {
         haveVoiceEnable = true;
       } else if (check.startsWith("AUDIO_MODE=")) {
         haveAudioMode = true;
+      } else if (check.startsWith("FREQUENCY_SHIFTING=")) {
+        haveFrequencyShifting = true;
       } else if (check.startsWith("ATTENUATION_MODE=")) {
         haveAttenuationMode = true;
       } else if (check.startsWith("ATTENUATION_MIN=")) {
@@ -665,6 +676,8 @@ void ensureSstvSettingsPresent() {
       haveVoiceEnable = true;
     } else if (check.startsWith("AUDIO_MODE=")) {
       haveAudioMode = true;
+    } else if (check.startsWith("FREQUENCY_SHIFTING=")) {
+      haveFrequencyShifting = true;
     } else if (check.startsWith("ATTENUATION_MODE=")) {
       haveAttenuationMode = true;
     } else if (check.startsWith("ATTENUATION_MIN=")) {
@@ -682,7 +695,7 @@ void ensureSstvSettingsPresent() {
 
   file.close();
 
-  if (!haveVoiceEnable || !haveAudioMode || !haveAttenuationMode || !haveAttenuationMin || !haveAttenuationMax || !haveEnable || !haveMode || !haveAprsEnable) {
+  if (!haveVoiceEnable || !haveAudioMode || !haveFrequencyShifting || !haveAttenuationMode || !haveAttenuationMin || !haveAttenuationMax || !haveEnable || !haveMode || !haveAprsEnable) {
     if (file.open(&root, SETTINGS_TXT, O_RDWR | O_AT_END)) {
       // Ensure appended keys begin on a fresh line even if the old file did
       // not end with a newline.
@@ -697,6 +710,13 @@ void ensureSstvSettingsPresent() {
           "# Normal audio source: WAV uses audio.wav/audio1.wav/...; RTTTL uses songs.txt.\n"
           "AUDIO_MODE=WAV\n";
         file.write(audioModeLine, sizeof(audioModeLine) - 1);
+      }
+      if (!haveFrequencyShifting) {
+        const char frequencyShiftLine[] =
+          "# Enables Frequency Shifting for Voice/WAV/RTTTL transmissions only. 1=enabled, 0=disabled.\n"
+          "# This setting never affects SSTV or APRS.\n"
+          "FREQUENCY_SHIFTING=1\n";
+        file.write(frequencyShiftLine, sizeof(frequencyShiftLine) - 1);
       }
 
       if (!haveAttenuationMode) {
@@ -983,6 +1003,8 @@ void loadSettings() {
         } else if (key == "AUDIO_MODE") {
           val.toUpperCase();
           settings.audioMode = (val == "RTTTL") ? AUDIO_MODE_RTTTL : AUDIO_MODE_WAV;
+        } else if (key == "FREQUENCY_SHIFTING") {
+          settings.frequencyShiftingEnabled = (val.toInt() != 0);
         } else if (key == "SSTV_ENABLE") {
           settings.sstvEnabled = (val.toInt() != 0);
         } else if (key == "SSTV_MODE") {
@@ -1026,6 +1048,8 @@ void loadSettings() {
       } else if (key == "AUDIO_MODE") {
         val.toUpperCase();
         settings.audioMode = (val == "RTTTL") ? AUDIO_MODE_RTTTL : AUDIO_MODE_WAV;
+      } else if (key == "FREQUENCY_SHIFTING") {
+        settings.frequencyShiftingEnabled = (val.toInt() != 0);
       } else if (key == "SSTV_ENABLE") {
         settings.sstvEnabled = (val.toInt() != 0);
       } else if (key == "SSTV_MODE") {
@@ -1063,7 +1087,7 @@ void loadSettings() {
     settings.attenuationMax = temp;
   }
 
-  if (settings.morseWPM == 0 || settings.morseWPM > 30) {
+  if (settings.morseWPM == 0 || settings.morseWPM > 60) {
     settings.morseWPM = DEFAULT_WPM;
   }
 
@@ -1140,7 +1164,7 @@ void ensureSettingsComments() {
     "# ATTENUATION_MAX must be greater than ATTENUATION_MIN.\n"
     "ATTENUATION_MAX=%u\n"
     "\n"
-    "# Morse ID speed in words per minute.\n"
+    "# Morse ID speed in words per minute. Valid range: 1 to 60 WPM.\n"
     "MORSE_WPM=%u\n"
     "\n"
     "# Morse tone frequency in Hz. Valid range: 100 to 2000 Hz.\n"
@@ -1159,6 +1183,10 @@ void ensureSettingsComments() {
     "# https://1j01.github.io/rtttl.js/\n"
     "# https://github.com/neverfa11ing/FlipperMusicRTTTL\n"
     "AUDIO_MODE=%s\n"
+    "\n"
+    "# Enables Frequency Shifting for Voice/WAV/RTTTL transmissions only. 1=enabled, 0=disabled.\n"
+    "# This setting never affects SSTV or APRS.\n"
+    "FREQUENCY_SHIFTING=%u\n"
     "\n"
     "# Enables SSTV mode. 1=enabled, 0=disabled.\n"
     "# You MUST set DUTY_CYCLE to less than 80 for SSTV mode to work correctly.\n"
@@ -1183,6 +1211,7 @@ void ensureSettingsComments() {
     settings.toneAmplitudePercent,
     settings.voiceEnabled ? 1 : 0,
     settings.audioMode == AUDIO_MODE_RTTTL ? "RTTTL" : "WAV",
+    settings.frequencyShiftingEnabled ? 1 : 0,
     settings.sstvEnabled ? 1 : 0,
     settings.aprsEnabled ? 1 : 0
   );
@@ -2594,12 +2623,8 @@ uint32_t sendNextAprsTransmission(uint8_t* carrierSequenceStep,
     return 0;
   }
 
-  int32_t carrierOffsetHz = getCarrierOffsetHz(*carrierSequenceStep);
-  *carrierSequenceStep =
-    (*carrierSequenceStep + 1) %
-    (sizeof(CARRIER_OFFSET_SEQUENCE_HZ) /
-     sizeof(CARRIER_OFFSET_SEQUENCE_HZ[0]));
-
+  // APRS is always exactly on FREQ_MHZ. Frequency Shifting never applies here.
+  int32_t carrierOffsetHz = 0;
   return sendAprsMessage(message.c_str(), carrierOffsetHz);
 }
 
@@ -2676,10 +2701,13 @@ uint32_t playNextNormalTransmission(uint8_t* carrierSequenceStep,
                                     uint16_t* songSequenceIndex) {
   if (hostMounted) return 0;
 
-  int32_t carrierOffsetHz = getCarrierOffsetHz(*carrierSequenceStep);
-  *carrierSequenceStep =
-    (*carrierSequenceStep + 1) %
-    (sizeof(CARRIER_OFFSET_SEQUENCE_HZ) / sizeof(CARRIER_OFFSET_SEQUENCE_HZ[0]));
+  int32_t carrierOffsetHz = 0;
+  if (settings.frequencyShiftingEnabled) {
+    carrierOffsetHz = getCarrierOffsetHz(*carrierSequenceStep);
+    *carrierSequenceStep =
+      (*carrierSequenceStep + 1) %
+      (sizeof(CARRIER_OFFSET_SEQUENCE_HZ) / sizeof(CARRIER_OFFSET_SEQUENCE_HZ[0]));
+  }
 
   // Key the transmitter on a clean carrier, then allow 100 ms for the RF
   // path and receiving radio to settle before beginning WAV/RTTTL audio.
@@ -2726,11 +2754,7 @@ uint32_t playNextNormalTransmission(uint8_t* carrierSequenceStep,
     delay(AUDIO_TO_MORSE_GAP_MS);
     activeLengthMs += AUDIO_TO_MORSE_GAP_MS;
 
-    carrierOffsetHz = getCarrierOffsetHz(*carrierSequenceStep);
-    *carrierSequenceStep =
-      (*carrierSequenceStep + 1) %
-      (sizeof(CARRIER_OFFSET_SEQUENCE_HZ) / sizeof(CARRIER_OFFSET_SEQUENCE_HZ[0]));
-
+    // Morse stays on the same carrier offset as its Voice/WAV/RTTTL transmission.
     setFrequencyOffset(carrierOffsetHz);
 
     Serial.print("Morse TX (live): ");
@@ -3376,6 +3400,8 @@ void setup() {
   Serial.println(settings.voiceEnabled ? 1 : 0);
   Serial.print("AUDIO_MODE=");
   Serial.println(settings.audioMode == AUDIO_MODE_RTTTL ? "RTTTL" : "WAV");
+  Serial.print("FREQUENCY_SHIFTING=");
+  Serial.println(settings.frequencyShiftingEnabled ? 1 : 0);
   Serial.print("SSTV_ENABLE=");
   Serial.println(settings.sstvEnabled ? 1 : 0);
 

@@ -75,9 +75,10 @@ __THIS SECTION IS STILL UNDER DEVELOPMENT AS THE NEW SOFTWARE IS BEING WRITTEN S
 - `ATTENUATION`: Attenuation level used when `ATTENUATION_MODE=FIXED`. Valid range is `0` - `127`, approximately 0.25dB steps.
 - `ATTENUATION_MIN`: Minimum attenuation value used when `ATTENUATION_MODE=RANDOM`. Valid range is `0` - `127` and must be less than `ATTENUATION_MAX`.
 - `ATTENUATION_MAX`: Maximum attenuation value used when `ATTENUATION_MODE=RANDOM`. Valid range is `0` - `127` and must be greater than `ATTENUATION_MIN`.
-- `MORSE_WPM`: Morse ID speed in words per minute.
-- `MORSE_TONE`: Morse tone frequency (100–2000 Hz).
-- `MORSE_TONE_VOL`: Morse tone volume percentage (`1–100`). Default is 70. Over 70 may cause distortion. Adust as needed to make the Morse sound good.
+- `FREQUENCY_SHIFTING`: Enables/Disables shifting of the carrier (+/-1k, +/-3k, +/-5k) for Wav/RTTTL transmissions. Does not affact SSTV/ARPS. Default is enabled.
+- `MORSE_WPM`: Morse ID speed in words per minute. Maximum is 60wpm, default is 15wpm
+- `MORSE_TONE`: Morse tone frequency (100–2000 Hz). Default is 600
+- `MORSE_TONE_VOL`: Morse tone volume percentage (`1–100`). Default is 60. Over 60 may cause distortion. Adust as needed to make the Morse sound good.
 - `VOICE_ENABLE`: Enables the Voice/Audio file and Morse code mode.
 - `AUDIO_MODE`: Selects the normal audio source. `WAV` uses `audio.wav`, `audio1.wav`, `audio2.wav`, etc. `RTTTL` uses songs from `songs.txt`.
 - `SSTV_ENABLE`: Enables SSTV Mode - YOU MUST set a duty cycle < 80 for this mode to work.
@@ -132,6 +133,7 @@ Using **Audacity** (free software available for all major OSs):
 - To restore the default audio, delete all  `audio.wav`, eject the drive, disconnect USB, and power cycle
   the PicoFox.
 - To use muliple audio files, append a 1 to the file name. IE `audio1.wav`, `audio2.wav` etc.
+- `FREQUENCY_SHIFTING` can cause the audio to sound bad. This causes the carrier to shift around a bit to make it a bit harder to find the fox.
 
 ## SSTV Mode
 
@@ -178,6 +180,8 @@ To add songs/tunes, add a song per line following the FlipperMusicTTL format:
 
 You fan find details of this here, as well as exmaple tunes: https://github.com/neverfa11ing/FlipperMusicRTTTL and https://1j01.github.io/rtttl.js/
 
+**NOTES:**
+- `FREQUENCY_SHIFTING` can cause the audio to sound bad. This causes the carrier to shift around a bit to make it a bit harder to find the fox.
 
 
 ## Design Brief
@@ -190,11 +194,10 @@ I<sup>2</sup>C0.
 Core 0 manages flash operations. Most extensions or new features should run on core 0.
 
 **Note:** Mounting the device as a USB mass storage device will interrupt clean modulation as both
-cores are blocked during flash operations.
+cores are blocked during flash operations. You will need to reset the device after writing to the file system.
 
 The SPI flash device is split into program memory and a FAT16 filesystem. The filesystem contains
-a text file for user-supplied settings, an audio file for transmission, a second audio file
-containing the generated morse code ID, and a hash file used to detect changes to the settings file.
+a text file for user-supplied settings, an audio file for transmission, and a hash file used to detect changes to the settings file.
 Unexpected files are automatically deleted and missing files are re-created from defaults in the
 firmware binary.
 
