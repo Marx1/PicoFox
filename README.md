@@ -1,13 +1,13 @@
 # PicoFox – A Hackable 2m Fox Transmitter
 **Pacificon Edition**
 
-*This version is modified from the origional by AI6YM. It's designed to be a badge (Defcon/Ham Radio Village Style), doesn't have the expansion header, and runs sightly diffrent firmware.*
+*This version is modified from the original by AI6YM. It's designed to be a badge (Defcon/Ham Radio Village Style), doesn't have the expansion header, and runs sightly diffrent firmware.*
 
 ----------
 **Partially AI CODED**
 The modifications to this code was mainly done with AI. I want to be clear about this. 
 I'm not a full-time coder, I do understand code, and don't have time to learn this platform for this one-off project.
-I *HATE* when people pass off code as thiers when it's been AI/Vibe coded, so I wanted to be super clear here.
+I *HATE* when people pass off code as theirs when it's been AI/Vibe coded, so I wanted to be super clear here.
 I did verify everything and validate the RF purity on my IFR 1900. It is a bit heavy on the deviation, so if you need it to be  more narrow, adjust AUDIO_FM_DEVIATION_HZ and SSTV_FM_DEVIATION_HZ as needed.
 -- Trevor KG6MDW
 
@@ -49,7 +49,7 @@ to 3kHz (data) bandwidth.
 enclosure, battery, and antenna are included. I ship nearly anywhere in the world.~~
 
 You can also build your own - both the hardware and software are open source for non-commercial use.
-For commercial inquiries, I am not providing ANY production of the hardware. However for the origional design contact [justin@ai6ym.radio](mailto:justin@ai6ym.radio), then load the firmware from this repository.
+For commercial inquiries, I am not providing ANY production of the hardware. However for the original design contact [justin@ai6ym.radio](mailto:justin@ai6ym.radio), then load the firmware from this repository.
 
 
 ## Configuration
@@ -161,7 +161,7 @@ __DO NOT USE THIS ON 144.39mhz Use a simplex/fox frequency.__
 
 ## Random TX power / Attenuation
 
-Incuded in the config is e settings: `ATTENUATION_MODE` , `ATTENUATION_MIN` and `ATTENUATION_MAX`
+Included in the config is e settings: `ATTENUATION_MODE` , `ATTENUATION_MIN` and `ATTENUATION_MAX`
 
 if `ATTENUATION_MODE` is set to `RANDOM` on each transmit a random atteunation value will be chosen between `ATTENUATION_MIN` and `ATTENUATION_MAX` and applied to the transmission..
 
@@ -178,7 +178,7 @@ To add songs/tunes, add a song per line following the FlipperMusicTTL format:
 
 ![FlipperMusicTTL Format](https://user-images.githubusercontent.com/6899421/171048290-1e95c9ba-5c26-4e6b-a969-ecd6003c6423.gif)
 
-You fan find details of this here, as well as exmaple tunes: https://github.com/neverfa11ing/FlipperMusicRTTTL and https://1j01.github.io/rtttl.js/
+You fan find details of this here, as well as example tunes: https://github.com/neverfa11ing/FlipperMusicRTTTL and https://1j01.github.io/rtttl.js/, you can also adapt some from websites like https://rtttl-hub.io/
 
 **NOTES:**
 - `FREQUENCY_SHIFTING` can cause the audio to sound bad. This causes the carrier to shift around a bit to make it a bit harder to find the fox.
