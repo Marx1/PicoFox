@@ -79,11 +79,13 @@ __THIS SECTION IS STILL UNDER DEVELOPMENT AS THE NEW SOFTWARE IS BEING WRITTEN S
 - `MORSE_WPM`: Morse ID speed in words per minute. Maximum is 60wpm, default is 15wpm
 - `MORSE_TONE`: Morse tone frequency (100–2000 Hz). Default is 600
 - `MORSE_TONE_VOL`: Morse tone volume percentage (`1–100`). Default is 60. Over 60 may cause distortion. Adust as needed to make the Morse sound good.
-- `VOICE_ENABLE`: Enables the Voice/Audio file and Morse code mode.
+- `VOICE_ENABLE`: Enables the Voice/Audio file.
+- `MORSE_MESSAGE_ENABLE`: Enables Mose code message mode. Messages are read from `morse.txt` one message per line.
 - `AUDIO_MODE`: Selects the normal audio source. `WAV` uses `audio.wav`, `audio1.wav`, `audio2.wav`, etc. `RTTTL` uses songs from `songs.txt`.
 - `SSTV_ENABLE`: Enables SSTV Mode - YOU MUST set a duty cycle < 80 for this mode to work.
 - `SSTV_MODE`: SSTV encoding mode, currently ONLY `ROBOT36` is supported.
 - `APRS_ENABLE`: Enables APRS message transmissions. Messages are read from `messages.txt`, one message per line.
+
 
 **Note:** Invalid or missing values may disable the transmitter or revert to safe defaults.
 
@@ -105,7 +107,8 @@ A full battery will last about five hours at 100% duty cycle with at 1200mAH bat
 Transmit cycle is:
   - SSTV (If enabled)
   - APRS (If Enabled)
-  - Audio/Morse
+  - Audio/Morse Message
+  
 
 
 ## Replacing the Audio File
@@ -158,6 +161,13 @@ __DO NOT USE THIS ON 144.39mhz Use a simplex/fox frequency.__
 
 **Notes:**
 - The messages are sent DIRECT so they wont be digipeated.
+
+## Morse message Mode
+
+Morse message mode lets you add an extra mose message  before it does the callsign. You can turn off Voice/RTTTL and it will do morse only; or leave voice/rttl on and it will do a voice/rttl -> Morse message -> callsign
+
+To use Morse message mode, Upload a text file  named `message.txt` to the flash with a message on each line. To comment out a line use a #. this also means you can't just send a hashtag message. Enable `MORSE_MESSAGE_ENABLE` in the config file to transmit this mode.
+
 
 ## Random TX power / Attenuation
 

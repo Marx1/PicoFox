@@ -153,7 +153,7 @@
 #define SI5351_REF_FREQ_X100 2500000000ULL
 
 #define SSTV_MODE_ROBOT36 36
-#define PICOFOX_FIRMWARE_VERSION "v60"
+#define PICOFOX_FIRMWARE_VERSION "v64"
 #define AUDIO_MODE_WAV 0
 #define AUDIO_MODE_RTTTL 1
 
@@ -219,6 +219,7 @@ const char AUDIO_SEQUENCE_PREFIX[] = "audio";
 const char AUDIO_SEQUENCE_EXT[] = ".wav";
 const char SONGS_TXT[] = "songs.txt";
 const char APRS_MESSAGES_TXT[] = "messages.txt";
+const char MORSE_MESSAGES_TXT[] = "morse.txt";
 #define FILE_SEQUENCE_MAX 999U
 
 #define SSTV_IMAGE_WIDTH 320
@@ -250,6 +251,7 @@ const uint8_t DEFAULT_ATTENUATION_MIN = 0;
 const uint8_t DEFAULT_ATTENUATION_MAX = 127;
 const bool DEFAULT_APRS_ENABLE = false;
 const bool DEFAULT_FREQUENCY_SHIFTING = true;
+const bool DEFAULT_MORSE_MESSAGE_ENABLE = false;
 
 // Built-in fallback tune. Replaces the old embedded PCM audio.h waveform.
 const char DEFAULT_RTTTL[] =
@@ -310,6 +312,7 @@ struct Settings {
   bool voiceEnabled;
   uint8_t audioMode;
   bool frequencyShiftingEnabled;
+  bool morseMessageEnabled;
 
   // SSTV configuration.
   bool sstvEnabled;
@@ -335,6 +338,7 @@ Settings settings = {
   .voiceEnabled = DEFAULT_VOICE_ENABLE,
   .audioMode = DEFAULT_AUDIO_MODE,
   .frequencyShiftingEnabled = DEFAULT_FREQUENCY_SHIFTING,
+  .morseMessageEnabled = DEFAULT_MORSE_MESSAGE_ENABLE,
   .sstvEnabled = DEFAULT_SSTV_ENABLE,
   .sstvMode = DEFAULT_SSTV_MODE,
   .aprsEnabled = DEFAULT_APRS_ENABLE
@@ -394,6 +398,7 @@ uint32_t nextAttenuationRandom();
 uint8_t selectAttenuationForTransmit();
 uint32_t playAudio(const char* filename, int32_t carrierOffsetHz);
 uint32_t playRtttl(const char* rtttl, int32_t carrierOffsetHz);
+uint32_t sendMorseText(const char* text, int32_t carrierOffsetHz);
 uint32_t sendMorseCallsign(int32_t carrierOffsetHz);
 bool buildAudioPllTable(int32_t carrierOffsetHz);
 bool writeAudioPllEntry(uint16_t index);
@@ -412,6 +417,8 @@ bool flashFileExists(const char* filename);
 void ensureSongsFilePresent();
 bool getNextRtttlSong(uint16_t* songIndex, String* outSong);
 void ensureAprsMessagesFilePresent();
+void ensureMorseMessagesFilePresent();
+bool getNextMorseMessage(uint16_t* messageIndex, String* outMessage);
 bool getNextAprsMessage(uint16_t* messageIndex, String* outMessage);
 bool readFatFileLine(FatFile* f, String* outLine);
 bool nextSequencedFile(const char* prefix,
@@ -421,7 +428,8 @@ bool nextSequencedFile(const char* prefix,
                        size_t outNameSize);
 uint32_t playNextNormalTransmission(uint8_t* carrierSequenceStep,
                                     uint16_t* audioSequenceIndex,
-                                    uint16_t* songSequenceIndex);
+                                    uint16_t* songSequenceIndex,
+                                    uint16_t* morseMessageIndex);
 uint32_t sendNextSstvTransmission(uint8_t* carrierSequenceStep,
                                   uint16_t* sstvSequenceIndex);
 uint32_t sendNextAprsTransmission(uint8_t* carrierSequenceStep,
@@ -558,7 +566,12 @@ void saveDefaultSettings() {
     "# Morse tone volume percentage. Valid range: 1 to 100.\n"
     "MORSE_TONE_VOL=%u\n"
     "\n"
-    "# Enables the Voice/Audio file and Morse code mode. 1=enabled, 0=disabled.\n"
+    "# Enables Morse messages from morse.txt instead of the CALLSIGN-only ID. 1=enabled, 0=disabled.\n"
+    "# morse.txt uses one message per line and rotates through the list.\n"
+    "# If VOICE_ENABLE=0 and this is 1, the transmitter sends only the Morse message and CALLSIGN.\n"
+    "MORSE_MESSAGE_ENABLE=%u\n"
+    "\n"
+    "# Enables WAV/RTTTL audio playback only. 1=enabled, 0=disabled.\n"
     "VOICE_ENABLE=%u\n"
     "\n"
     "# Selects the normal audio source. Valid values: WAV or RTTTL.\n"
@@ -592,6 +605,7 @@ void saveDefaultSettings() {
     DEFAULT_WPM,
     DEFAULT_MORSE_TONE_HZ,
     DEFAULT_TONE_AMPLITUDE_PERCENT,
+    DEFAULT_MORSE_MESSAGE_ENABLE ? 1 : 0,
     DEFAULT_VOICE_ENABLE ? 1 : 0,
     DEFAULT_FREQUENCY_SHIFTING ? 1 : 0,
     DEFAULT_SSTV_ENABLE ? 1 : 0,
@@ -620,6 +634,7 @@ void ensureSstvSettingsPresent() {
   bool haveVoiceEnable = false;
   bool haveAudioMode = false;
   bool haveFrequencyShifting = false;
+  bool haveMorseMessageEnable = false;
   bool haveAttenuationMode = false;
   bool haveAttenuationMin = false;
   bool haveAttenuationMax = false;
@@ -647,6 +662,8 @@ void ensureSstvSettingsPresent() {
         haveAudioMode = true;
       } else if (check.startsWith("FREQUENCY_SHIFTING=")) {
         haveFrequencyShifting = true;
+      } else if (check.startsWith("MORSE_MESSAGE_ENABLE=")) {
+        haveMorseMessageEnable = true;
       } else if (check.startsWith("ATTENUATION_MODE=")) {
         haveAttenuationMode = true;
       } else if (check.startsWith("ATTENUATION_MIN=")) {
@@ -678,6 +695,8 @@ void ensureSstvSettingsPresent() {
       haveAudioMode = true;
     } else if (check.startsWith("FREQUENCY_SHIFTING=")) {
       haveFrequencyShifting = true;
+    } else if (check.startsWith("MORSE_MESSAGE_ENABLE=")) {
+      haveMorseMessageEnable = true;
     } else if (check.startsWith("ATTENUATION_MODE=")) {
       haveAttenuationMode = true;
     } else if (check.startsWith("ATTENUATION_MIN=")) {
@@ -695,7 +714,7 @@ void ensureSstvSettingsPresent() {
 
   file.close();
 
-  if (!haveVoiceEnable || !haveAudioMode || !haveFrequencyShifting || !haveAttenuationMode || !haveAttenuationMin || !haveAttenuationMax || !haveEnable || !haveMode || !haveAprsEnable) {
+  if (!haveVoiceEnable || !haveAudioMode || !haveFrequencyShifting || !haveMorseMessageEnable || !haveAttenuationMode || !haveAttenuationMin || !haveAttenuationMax || !haveEnable || !haveMode || !haveAprsEnable) {
     if (file.open(&root, SETTINGS_TXT, O_RDWR | O_AT_END)) {
       // Ensure appended keys begin on a fresh line even if the old file did
       // not end with a newline.
@@ -717,6 +736,14 @@ void ensureSstvSettingsPresent() {
           "# This setting never affects SSTV or APRS.\n"
           "FREQUENCY_SHIFTING=1\n";
         file.write(frequencyShiftLine, sizeof(frequencyShiftLine) - 1);
+      }
+      if (!haveMorseMessageEnable) {
+        const char morseMessageLine[] =
+          "# Enables Morse messages from morse.txt instead of the CALLSIGN-only ID. 1=enabled, 0=disabled.\n"
+          "# morse.txt uses one message per line and rotates through the list.\n"
+    "# If VOICE_ENABLE=0 and this is 1, the transmitter sends only the Morse message and CALLSIGN.\n"
+          "MORSE_MESSAGE_ENABLE=0\n";
+        file.write(morseMessageLine, sizeof(morseMessageLine) - 1);
       }
 
       if (!haveAttenuationMode) {
@@ -843,6 +870,77 @@ bool getNextRtttlSong(uint16_t* songIndex, String* outSong) {
 }
 
 
+
+void ensureMorseMessagesFilePresent() {
+  if (!openRoot()) return;
+
+  if (!root.exists(MORSE_MESSAGES_TXT)) {
+    if (file.open(&root, MORSE_MESSAGES_TXT, O_RDWR | O_CREAT | O_TRUNC)) {
+      const char defaultMessage[] = "PICOFOX\n";
+      file.write((const uint8_t*)defaultMessage, sizeof(defaultMessage) - 1);
+      file.close();
+      Serial.println("Created morse.txt with a default Morse message.");
+    }
+  }
+
+  closeRoot();
+}
+
+bool getNextMorseMessage(uint16_t* messageIndex, String* outMessage) {
+  if (!messageIndex || !outMessage || hostMounted) return false;
+
+  filesystemBusy = true;
+  if (!openRoot()) {
+    filesystemBusy = false;
+    return false;
+  }
+
+  if (!file.open(&root, MORSE_MESSAGES_TXT, O_RDONLY)) {
+    closeRoot();
+    filesystemBusy = false;
+    return false;
+  }
+
+  uint16_t n = 0;
+  String line;
+
+  while (file.available()) {
+    if (!readFatFileLine(&file, &line)) break;
+    line.trim();
+    if (!line.length() || line[0] == '#') continue;
+
+    if (n == *messageIndex) {
+      *outMessage = line;
+      (*messageIndex)++;
+      file.close();
+      closeRoot();
+      filesystemBusy = false;
+      return true;
+    }
+    n++;
+  }
+
+  file.rewind();
+  while (file.available()) {
+    if (!readFatFileLine(&file, &line)) break;
+    line.trim();
+    if (!line.length() || line[0] == '#') continue;
+
+    *outMessage = line;
+    *messageIndex = 1;
+    file.close();
+    closeRoot();
+    filesystemBusy = false;
+    return true;
+  }
+
+  file.close();
+  closeRoot();
+  filesystemBusy = false;
+  return false;
+}
+
+
 void ensureAprsMessagesFilePresent() {
   if (!openRoot()) return;
 
@@ -937,6 +1035,7 @@ void flashCleanup() {
   // rewritten in the current documented format with the loaded values.
   ensureSstvSettingsPresent();
   ensureSongsFilePresent();
+  ensureMorseMessagesFilePresent();
   ensureAprsMessagesFilePresent();
 }
 
@@ -998,6 +1097,8 @@ void loadSettings() {
           settings.morseToneHz = val.toInt();
         } else if (key == "MORSE_TONE_VOL") {
           settings.toneAmplitudePercent = val.toInt();
+        } else if (key == "MORSE_MESSAGE_ENABLE") {
+          settings.morseMessageEnabled = (val.toInt() != 0);
         } else if (key == "VOICE_ENABLE") {
           settings.voiceEnabled = (val.toInt() != 0);
         } else if (key == "AUDIO_MODE") {
@@ -1173,7 +1274,11 @@ void ensureSettingsComments() {
     "# Morse tone volume percentage. Valid range: 1 to 100.\n"
     "MORSE_TONE_VOL=%u\n"
     "\n"
-    "# Enables the Voice/Audio file and Morse code mode. 1=enabled, 0=disabled.\n"
+    "# Enables Morse messages from morse.txt instead of the CALLSIGN-only ID. 1=enabled, 0=disabled.\n"
+    "# morse.txt uses one message per line and rotates through the list.\n"
+    "MORSE_MESSAGE_ENABLE=%u\n"
+    "\n"
+    "# Enables WAV/RTTTL audio playback only. 1=enabled, 0=disabled.\n"
     "VOICE_ENABLE=%u\n"
     "\n"
     "# Selects the normal audio source. Valid values: WAV or RTTTL.\n"
@@ -1209,6 +1314,7 @@ void ensureSettingsComments() {
     settings.morseWPM,
     settings.morseToneHz,
     settings.toneAmplitudePercent,
+    settings.morseMessageEnabled ? 1 : 0,
     settings.voiceEnabled ? 1 : 0,
     settings.audioMode == AUDIO_MODE_RTTTL ? "RTTTL" : "WAV",
     settings.frequencyShiftingEnabled ? 1 : 0,
@@ -1892,8 +1998,8 @@ uint32_t playRtttl(const char* rtttl, int32_t carrierOffsetHz) {
   return totalMs;
 }
 
-uint32_t sendMorseCallsign(int32_t carrierOffsetHz) {
-  if (hostMounted || !settings.callsign[0]) return 0;
+uint32_t sendMorseText(const char* text, int32_t carrierOffsetHz) {
+  if (hostMounted || !text || !text[0]) return 0;
 
   buildAudioPllTable(carrierOffsetHz);
   audioPhase32 = 0;
@@ -1945,11 +2051,10 @@ uint32_t sendMorseCallsign(int32_t carrierOffsetHz) {
   uint32_t totalMs = 0;
   bool previousWasCharacter = false;
 
-  for (uint8_t i = 0;
-       settings.callsign[i] && i < sizeof(settings.callsign);
-       i++) {
+  for (size_t i = 0; text[i]; i++) {
+    if (hostMounted) break;
 
-    char c = settings.callsign[i];
+    char c = text[i];
 
     if (c == ' ') {
       // The previous character already ended without an added gap. Emit the
@@ -1992,6 +2097,10 @@ uint32_t sendMorseCallsign(int32_t carrierOffsetHz) {
   }
 
   return totalMs;
+}
+
+uint32_t sendMorseCallsign(int32_t carrierOffsetHz) {
+  return sendMorseText(settings.callsign, carrierOffsetHz);
 }
 
 // -----------------------------------------------------------------------------
@@ -2698,7 +2807,8 @@ void applyDutyCycleOff(uint32_t activeLengthMs,
 
 uint32_t playNextNormalTransmission(uint8_t* carrierSequenceStep,
                                     uint16_t* audioSequenceIndex,
-                                    uint16_t* songSequenceIndex) {
+                                    uint16_t* songSequenceIndex,
+                                    uint16_t* morseMessageIndex) {
   if (hostMounted) return 0;
 
   int32_t carrierOffsetHz = 0;
@@ -2719,48 +2829,79 @@ uint32_t playNextNormalTransmission(uint8_t* carrierSequenceStep,
   // must be included when calculating the configured duty cycle.
   uint32_t activeLengthMs = TX_KEYUP_DELAY_MS;
 
-  if (settings.audioMode == AUDIO_MODE_RTTTL) {
-    String song;
-    if (getNextRtttlSong(songSequenceIndex, &song)) {
-      Serial.print("Normal TX RTTTL: ");
-      int colon= song.indexOf(':');
-      Serial.println(colon > 0 ? song.substring(0, colon) : String("(unnamed)"));
-      activeLengthMs += playRtttl(song.c_str(), carrierOffsetHz);
-    } else {
-      Serial.println("No valid songs.txt entries; using built-in RTTTL fallback.");
-      activeLengthMs += playRtttl(DEFAULT_RTTTL, carrierOffsetHz);
-    }
-  } else {
-    char audioFilename[32];
-    bool haveAudio = nextSequencedFile(
-      AUDIO_SEQUENCE_PREFIX, AUDIO_SEQUENCE_EXT,
-      audioSequenceIndex, audioFilename, sizeof(audioFilename));
+  bool playedNormalAudio = false;
 
-    if (haveAudio) {
-      Serial.print("Normal TX WAV: ");
-      Serial.println(audioFilename);
-      activeLengthMs += playAudio(audioFilename, carrierOffsetHz);
+  if (settings.voiceEnabled) {
+    if (settings.audioMode == AUDIO_MODE_RTTTL) {
+      String song;
+      if (getNextRtttlSong(songSequenceIndex, &song)) {
+        Serial.print("Normal TX RTTTL: ");
+        int colon= song.indexOf(':');
+        Serial.println(colon > 0 ? song.substring(0, colon) : String("(unnamed)"));
+        activeLengthMs += playRtttl(song.c_str(), carrierOffsetHz);
+      } else {
+        Serial.println("No valid songs.txt entries; using built-in RTTTL fallback.");
+        activeLengthMs += playRtttl(DEFAULT_RTTTL, carrierOffsetHz);
+      }
     } else {
-      Serial.println("audio.wav missing; using built-in RTTTL fallback.");
-      activeLengthMs += playRtttl(DEFAULT_RTTTL, carrierOffsetHz);
+      char audioFilename[32];
+      bool haveAudio = nextSequencedFile(
+        AUDIO_SEQUENCE_PREFIX, AUDIO_SEQUENCE_EXT,
+        audioSequenceIndex, audioFilename, sizeof(audioFilename));
+
+      if (haveAudio) {
+        Serial.print("Normal TX WAV: ");
+        Serial.println(audioFilename);
+        activeLengthMs += playAudio(audioFilename, carrierOffsetHz);
+      } else {
+        Serial.println("audio.wav missing; using built-in RTTTL fallback.");
+        activeLengthMs += playRtttl(DEFAULT_RTTTL, carrierOffsetHz);
+      }
     }
+
+    playedNormalAudio = true;
+  } else if (settings.morseMessageEnabled) {
+    Serial.println("Voice disabled; transmitting Morse message only.");
   }
 
-  // Morse always follows either WAV or RTTTL audio.
   if (!test_mode && !hostMounted) {
-    // Return to an unmodulated carrier for 250 ms before the Morse ID.
-    // The transmitter remains keyed for this entire interval.
-    setFrequencyOffset(carrierOffsetHz);
-    delay(AUDIO_TO_MORSE_GAP_MS);
-    activeLengthMs += AUDIO_TO_MORSE_GAP_MS;
+    if (playedNormalAudio) {
+      // Return to an unmodulated carrier for 250 ms before the Morse ID.
+      // The transmitter remains keyed for this entire interval.
+      setFrequencyOffset(carrierOffsetHz);
+      delay(AUDIO_TO_MORSE_GAP_MS);
+      activeLengthMs += AUDIO_TO_MORSE_GAP_MS;
 
-    // Morse stays on the same carrier offset as its Voice/WAV/RTTTL transmission.
-    setFrequencyOffset(carrierOffsetHz);
+      // Morse stays on the same carrier offset as its Voice/WAV/RTTTL transmission.
+      setFrequencyOffset(carrierOffsetHz);
+    }
 
-    Serial.print("Morse TX (live): ");
-    Serial.println(settings.callsign);
+    if (settings.morseMessageEnabled) {
+      String morseMessage;
+      if (getNextMorseMessage(morseMessageIndex, &morseMessage)) {
+        Serial.print("Morse message TX: ");
+        Serial.println(morseMessage);
+        activeLengthMs += sendMorseText(morseMessage.c_str(), carrierOffsetHz);
 
-    activeLengthMs += sendMorseCallsign(carrierOffsetHz);
+        // Always follow a configured Morse message with the normal CALLSIGN ID.
+        // Use one standard 7-dit word gap between the message and callsign.
+        const uint32_t morseWordGapUs =
+          7UL * (1200000UL / settings.morseWPM);
+        sendAudioSilence(morseWordGapUs);
+        activeLengthMs += morseWordGapUs / 1000UL;
+
+        Serial.print("Morse callsign TX: ");
+        Serial.println(settings.callsign);
+        activeLengthMs += sendMorseCallsign(carrierOffsetHz);
+      } else {
+        Serial.println("morse.txt has no valid messages; using CALLSIGN.");
+        activeLengthMs += sendMorseCallsign(carrierOffsetHz);
+      }
+    } else if (settings.voiceEnabled) {
+      Serial.print("Morse TX (live): ");
+      Serial.println(settings.callsign);
+      activeLengthMs += sendMorseCallsign(carrierOffsetHz);
+    }
   }
 
   return activeLengthMs;
@@ -3273,6 +3414,7 @@ void audioTask() {
   uint8_t carrierSequenceStep = 0;
   uint16_t audioSequenceIndex = 0;
   uint16_t songSequenceIndex = 0;
+  uint16_t morseMessageIndex = 0;
   uint16_t sstvSequenceIndex = 0;
   uint16_t aprsMessageIndex = 0;
 
@@ -3292,7 +3434,7 @@ void audioTask() {
       continue;
     }
 
-    bool normalEnabled = settings.voiceEnabled;
+    bool normalEnabled = settings.voiceEnabled || settings.morseMessageEnabled;
     bool sstvEnabled =
       settings.sstvEnabled && settings.sstvMode == SSTV_MODE_ROBOT36;
     bool aprsEnabled = settings.aprsEnabled;
@@ -3317,7 +3459,8 @@ void audioTask() {
           playNextNormalTransmission(
             &carrierSequenceStep,
             &audioSequenceIndex,
-            &songSequenceIndex
+            &songSequenceIndex,
+            &morseMessageIndex
           );
         transmitted = activeLengthMs > 0;
       } else if (mode == 1 && sstvEnabled) {
@@ -3402,6 +3545,8 @@ void setup() {
   Serial.println(settings.audioMode == AUDIO_MODE_RTTTL ? "RTTTL" : "WAV");
   Serial.print("FREQUENCY_SHIFTING=");
   Serial.println(settings.frequencyShiftingEnabled ? 1 : 0);
+  Serial.print("MORSE_MESSAGE_ENABLE=");
+  Serial.println(settings.morseMessageEnabled ? 1 : 0);
   Serial.print("SSTV_ENABLE=");
   Serial.println(settings.sstvEnabled ? 1 : 0);
 
